@@ -37,18 +37,29 @@ typedef struct {
 typedef struct {
 	Jeu jeu;
 	Date date;
-	nbPdisp; //nb de places dispo
-	nbPtot; //nb de places totales
+	int nbPdisp; //nb de places dispo
+	int nbPtot; //nb de places totales
 } ApresMidi;
 
 typedef struct {
 	Client client;
-	elementCli *nxt;
-} elementCli;
-typedef elementCli* liClient;
+	struct elemCli *nxt;
+} elemCli;
+
+typedef struct {
+	elemCli *start;
+	elemCli *end;
+	int size;
+} liClient;
 
 void printMenu(int *choix);
 void Menu ();
+
+int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname
+void initLiCli(liClient *li); //init client list
+Client readClient(FILE *file); //read client info in file
+void insTriLiCLi(liClient *li, Client cli); //insert client in sorted list
+void loadLiClient(liClient *li); //load client list from file
 
 void newCli();
 void updateCli(Client client);

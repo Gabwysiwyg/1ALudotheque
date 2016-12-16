@@ -79,7 +79,7 @@ void Menu()
                 printf("\nYou've chosen to exit. \t");
                 printf("Glad you came, see you soon!\n");
                 printf("\n");
-                return 0;  
+                return;  
         }
     }
 }
@@ -110,12 +110,117 @@ Client readClient(FILE *file)
 }
 
 
-void createLiClient(liClient *li)
+void initLiCli(liClient *li)
+{
+    li->start = NULL;
+    li->end = NULL;
+    li->size = 0;
+}
+
+
+
+/*void insEndLiCli(liClient *li, Client cli)
+{
+    elemCli *elem;
+
+    elem = (elemCli *)malloc(sizeof(elemCli));
+    if (elem = NULL)
+    {
+        printf("Malloc elemCli failed\n");
+        exit(1);
+    }
+
+    li->end->nxt = elem; //change pnt of last element
+    li->end = elem; //change end of list
+    li->size++;
+}*/
+
+
+int cmpNomPrenom(Client c1, Client c2)
+{
+    if (strcmp(c1.nom, c2.nom) < 0)
+        return -1;
+    else if(strcmp(c1.nom, c2.nom) > 0)
+        return 1;
+
+    //IF NAME ARE THE SAME
+    else if (strcmp(c1.prenom, c2.prenom) < 0)
+        return -1;
+    else if(strcmp(c1.prenom, c2.prenom) > 0)
+        return 1;
+    else //if name & surname are equal
+        return 0;
+
+}
+
+
+void insTriLiCLi(liClient *li, Client cli)
+{
+    int i, cmp, cmpNxt;
+
+    elemCli *pnt; //current pos in the list
+    elemCli *elem; //elem to insert
+
+    elem = (elemCli *)malloc(sizeof(elemCli));
+    if (elem = NULL)
+    {
+        printf("Malloc elemCli failed\n");
+        exit(1);
+    }
+
+    elem->client = cli;
+
+    if (li->size == 0) //if list is empty
+    {
+        li->start = elem; //set start
+        li->size++;
+        return;
+    }
+
+
+
+    pnt = li->start; //set pnt to beginning of the list
+
+    while(pnt->nxt != NULL)
+    {
+        cmp = cmpNomPrenom(pnt->client, elem->client); //cmp name & surname with curr pos
+        cmpNxt = cmpNomPrenom(pnt->nxt->client, elem->client); //cmp name & surname with next pos
+        if (pnt == li->start && cmp == -1) //if we have to insert it in 1st position
+        {
+            elem->nxt = li->start;
+            li->start = elem;
+            li->size++;
+            return;
+        }
+
+        if (cmp == 1 & cmpNxt == -1)
+        {
+            elem->nxt = pnt->nxt;
+            pnt = elem;
+            li->size++;
+            return;
+        }
+
+
+        pnt = pnt->nxt;
+    }
+
+    //if we have to insert at the end
+    li->end->nxt = elem; //change pnt of last element
+    li->end = elem; //change end of list
+    li->size++;
+
+}
+
+
+
+void loadLiClient(liClient *li)
 {
 	FILE fe;
-	Client cli;
-	elementCli;
-	int nbmax;
+    int nbmax, i;
+
+	elemCli *elem;
+ 
 	fe = fopen("client.don", "r");
 	if (fe == NULL)
 	{
@@ -123,8 +228,11 @@ void createLiClient(liClient *li)
 		exit(1);
 	}
 
-	fscanf(fe, "%d", &nbmax);
+    fscanf(fe, "%d", &nbmax);
 
-	*li = (liClient)malloc(nbmax*sizeof(elementCli));
 
+    for (int i=0; i < nbmax; i++)
+        insTriLiCLi(&li, readClient(fe));
+
+    return;
 }

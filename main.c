@@ -5,6 +5,17 @@
 
 int main (void)
 {
-    Menu();
+    //Menu();
+    liClient  li;
+    elemClient *pnt;
+
+    loadLiClient(&li);
+    pnt = li->start;
+
+    while (pnt->nxt != NULL)
+    {
+    	printf("%s\n", pnt->client->nom);
+    	pnt = pnt->nxt;
+    }
 	return 0;
 }
