@@ -136,7 +136,7 @@ void initLiCli(liClient *li)
 }*/
 
 
-int cmpNomPrenom(Client c1, Client c2)
+int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case behavior
 {
     if (strcmp(c1.nom, c2.nom) < 0)
         return -1;
@@ -158,8 +158,8 @@ void insTriLiCLi(liClient *li, Client cli)
 {
     int i, cmp, cmpNxt;
 
-    elemCli *pnt; //current pos in the list
-    elemCli *elem; //elem to insert
+    elemCli *pnt = NULL; //current pos in the list
+    elemCli *elem = NULL; //elem to insert
 
     elem = (elemCli *)malloc(sizeof(elemCli));
     if (elem = NULL)
@@ -173,6 +173,7 @@ void insTriLiCLi(liClient *li, Client cli)
     if (li->size == 0) //if list is empty
     {
         li->start = elem; //set start
+        li->end elem;
         li->size++;
         return;
     }
@@ -196,7 +197,7 @@ void insTriLiCLi(liClient *li, Client cli)
         if (cmp == 1 & cmpNxt == -1)
         {
             elem->nxt = pnt->nxt;
-            pnt = elem;
+            pnt->next = elem;
             li->size++;
             return;
         }
@@ -219,8 +220,7 @@ void loadLiClient(liClient *li)
 	FILE fe;
     int nbmax, i;
 
-	elemCli *elem;
- 
+	 
 	fe = fopen("client.don", "r");
 	if (fe == NULL)
 	{
@@ -235,4 +235,106 @@ void loadLiClient(liClient *li)
         insTriLiCLi(&li, readClient(fe));
 
     return;
+}
+
+
+elemCli * findCli(liClient li, char *nom, char *prenom)
+{
+    Client tmp;
+    elemCli *pnt;
+
+    strcpy(tmp.nom, nom);
+    strcpy(tmp.prenom, prenom);
+
+    while (pnt->nxt != NULL)
+    if (cmpNomPrenom(pnt->nxt->client, cli) == 0)
+        return pnt;
+
+    return NULL;
+}
+
+
+void newClient(liClient *li)
+{
+    Client cli;
+
+    printf("Nom: ");
+    scanf("%s", cli.nom);
+
+    printf("Prenom: ");
+    scanf("%s", cli.prenom);
+
+    printf("Adresse: ");
+    scanf("%s", cli.adresse);
+
+    printf("Ville: ");
+    scanf("%s", cli.ville);
+
+    printf("Code postal: ");
+    scanf("%s", cli.nom); 
+
+    cli.paye = false;
+    cli.nbEmp = 0;
+
+    insTriLiCLi(li, cli);
+}
+
+void updateClient(Client *cli)
+{
+    char ans;
+    
+    printf("Update nom ?");
+    ans = getchar();
+    if (ans == 'o')
+    {
+        printf("Nouveau nom: ");
+        scanf("%s", cli->nom);
+    }
+
+    printf("Update prenom ?");
+    ans = getchar();
+    if (ans == 'o')
+    {
+        printf("Nouveau prenom: ");
+        scanf("%s", cli->prenom);
+    }
+
+    printf("Update adresse ?");
+    ans = getchar();
+    if (ans == 'o')
+    {
+        printf("Nouvelle adresse: ");
+        scanf("%s", cli->adresse);
+    }
+
+    printf("Update code postal ?");
+    ans = getchar();
+    if (ans == 'o')
+    {
+        printf("Nouveau code postal: ");
+        scanf("%s", cli->nom);
+        printf("Nouvelle ville: ");
+        scanf("%s", cli->ville);
+    }
+
+    printf("Update ville ?");
+    ans = getchar();
+    if (ans == 'o')
+    {
+        printf("Nouvelle ville: ");
+        scanf("%s", cli->ville);
+    }
+}
+
+void delClient(liClient *li, char *nom, char *prenom)
+{
+    Client *tmp, *cli = findCli(*li, nom, prenom);
+    tmp = cli->nxt;
+    cli->nxt = cli->nxt->nxt;
+    free(tmp);
+}
+
+int subDate(Date d1, Date d2)
+{
+    return 365(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour
 }

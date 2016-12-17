@@ -41,15 +41,16 @@ typedef struct {
 	int nbPtot; //nb de places totales
 } ApresMidi;
 
-typedef struct {
+typedef struct elemCli elemCli;
+typedef elemCli {
 	Client client;
-	struct elemCli *nxt;
-} elemCli;
+	elemCli *nxt;
+};
 
 typedef struct {
-	elemCli *start;
-	elemCli *end;
-	int size;
+	elemCli *start; //pntr to the first element of the list
+	elemCli *end; //pntr to the last element of the list
+	int size; //nb of elements in the list
 } liClient;
 
 void printMenu(int *choix);
@@ -61,9 +62,12 @@ Client readClient(FILE *file); //read client info in file
 void insTriLiCLi(liClient *li, Client cli); //insert client in sorted list
 void loadLiClient(liClient *li); //load client list from file
 
-void newCli();
+elemCli * findCli(liClient li, char *nom, char *prenom); //returns previous pntr (easier for delete)
+void newClient(liClient *li);
 void updateCli(Client client);
 void delCli();
 void newEmprunt(Client client, Jeu jeu);
 void newAfternoon(Jeu jeu, Date date, int nbtot);
 void regForAfternoon(Client client, ApresMidi apMidi);
+
+int subDate(Date d1, Date d2);
