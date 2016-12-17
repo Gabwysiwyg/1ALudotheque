@@ -8,7 +8,7 @@ typedef enum {false, true} bool;
 typedef struct{
 	int jour;
 	int mois;
-	int annee;
+	int an;
 } Date;
 
 typedef struct {
@@ -42,7 +42,7 @@ typedef struct {
 } ApresMidi;
 
 typedef struct elemCli elemCli;
-typedef elemCli {
+struct elemCli {
 	Client client;
 	elemCli *nxt;
 };
@@ -57,16 +57,22 @@ void printMenu(int *choix);
 void Menu ();
 
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname
-void initLiCli(liClient *li); //init client list
-Client readClient(FILE *file); //read client info in file
-void insTriLiCLi(liClient *li, Client cli); //insert client in sorted list
-void loadLiClient(liClient *li); //load client list from file
 
-elemCli * findCli(liClient li, char *nom, char *prenom); //returns previous pntr (easier for delete)
+
+
+void initLiCli(liClient *li); //init client list
+void loadLiClient(liClient *li); //load client list from file
+void insTriLiCLi(liClient *li, Client cli); //insert client in sorted list
+Client readClient(FILE *file); //read client info in file
+
 void newClient(liClient *li);
 void updateCli(Client client);
+elemCli * findCli(liClient li, char *nom, char *prenom); //returns previous pntr (easier for delete)
 void delCli();
+
+
 void newEmprunt(Client client, Jeu jeu);
+
 void newAfternoon(Jeu jeu, Date date, int nbtot);
 void regForAfternoon(Client client, ApresMidi apMidi);
 

@@ -6,16 +6,27 @@
 int main (void)
 {
     //Menu();
-    liClient  li;
-    elemClient *pnt;
+    liClient li;
+    elemCli *pnt;
 
+    initLiCli(&li);
     loadLiClient(&li);
-    pnt = li->start;
+    pnt = li.start;
 
-    while (pnt->nxt != NULL)
+    while (pnt != NULL)
     {
-    	printf("%s\n", pnt->client->nom);
+    	printf("%s\n", pnt->client.nom);
     	pnt = pnt->nxt;
     }
+    printf("\n");
+    newClient(&li);
+    pnt = li.start;
+
+    while (pnt != NULL)
+    {
+        printf("%s  %s\n", pnt->client.nom, pnt->client.prenom);
+        pnt = pnt->nxt;
+    }
+
 	return 0;
 }
