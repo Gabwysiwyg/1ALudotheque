@@ -61,21 +61,20 @@ void insTriLiCLi(liClient *li, Client cli)
     elemCli *pnt; //current pos in the list
     elemCli *elem; //elem to insert
 
-    elem = (elemCli *)malloc(sizeof(elemCli));
-    
+    elem = (elemCli *)malloc(sizeof(elemCli)); //alloc elem
     if (elem == NULL)
     {
         printf("Malloc elemCli failed\n");
         exit(1);
     }
 
-    elem->client = cli;
+    elem->client = cli; //put client to insert inside elem
     
 
     if (li->size == 0) //if list is empty
     {
-        li->start = elem; //set start
-        li->end = elem;
+        li->start = elem; //set start to element
+        li->end = elem; //set end to element
         li->size++;
         return;
     }
@@ -85,10 +84,10 @@ void insTriLiCLi(liClient *li, Client cli)
     pnt = li->start; //set pnt to beginning of the list
 
     cmp = cmpNomPrenom(pnt->client, elem->client); //cmp name & surname with curr pos
-    if (pnt == li->start && cmp == -1) //if we have to insert it in 1st position
+    if (pnt == li->start && cmp == -1) //if we have to insert in 1st position
     {
-        elem->nxt = li->start;
-        li->start = elem;
+        elem->nxt = li->start; //put 1st element next to elem (so it's 2nd)
+        li->start = elem; //put element in 1st pos
         li->size++;
         return;
     }
@@ -218,21 +217,22 @@ void updateClient(Client *cli)
 
     printf("Update code postal ?");
     ans = getchar();
-    if (ans == 'o')
+    if (ans == 'o') //if we change postal code we also change city
     {
         printf("Nouveau code postal: ");
         scanf("%s", cli->nom);
         printf("Nouvelle ville: ");
         scanf("%s", cli->ville);
     }
-
-    printf("Update ville ?");
-    ans = getchar();
-    if (ans == 'o')
-    {
-        printf("Nouvelle ville: ");
-        scanf("%s", cli->ville);
-    }
+    else {
+	    printf("Update ville ?");
+	    ans = getchar();
+	    if (ans == 'o')
+	    {
+	        printf("Nouvelle ville: ");
+	        scanf("%s", cli->ville);
+	    }
+	}
 }
 
 void delClient(liClient *li, char *nom, char *prenom)
