@@ -38,7 +38,7 @@ void printMenu(int *choix);
 void Menu ();
 
 
-
+Jeu * putListInTab (Jeu *tJeu);
 void newEmprunt(Client client, Jeu jeu);
 
 void newAfternoon(Jeu jeu, Date date, int nbtot);

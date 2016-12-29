@@ -92,10 +92,55 @@ int subDate(Date d1, Date d2)
     return 365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour;
 }
 
-void newEmprunt(Client client, Jeu jeu)
+Jeu * putListInTab (Jeu *tJeu){
+     FILE *fe;
+     int i=0;
+     Jeu j;
+
+    fe=fopen("gamelist.don", "r");
+    if (fe ==NULL){
+        printf("Issue during file oppening\n");
+        exit(1);
+    }
+
+    tJeu=(Jeu *)malloc(8015*sizeof(Jeu));
+    if (tJeu==NULL){
+        printf("Issue during allocation\n");
+        exit(1);
+    }
+
+    fgets(j.nom, 40, fe);
+    j.nom[strlen(j.nom)-1] = '\0';
+    scanf("%d %d", &(j.nbdisp), &(j.nbtot));
+
+    while (!feof(fs)){
+        if (i >= 8015){
+            printf("Error, index exceeded\n");
+            return -1; 
+        }
+        tJeu[i]=j;
+        i++;
+        fgets(j.nom, 40, fe);
+        j.nom[strlen(j.nom)-1] = '\0';
+        scanf("%d %d", &(j.nbdisp), &(j.nbtot));
+    }
+
+    fclose(fe);
+    return tJeu;
+}
+
+void newEmprunt(Client client, Jeu jeu, Jeu *tJeu)
 {
     Emprunt emp;
     Emprunt *empr;
+    FILE *fs;
+    int j;
+
+    fs=fopen("gamelist.don", "r");
+    if (fs ==NULL){
+        printf("Issue during file oppening\n");
+        exit(1);
+    }
 
     printf("Nom: ");
     fgets(emp.client.nom, 30, stdin);
@@ -120,7 +165,15 @@ void newEmprunt(Client client, Jeu jeu)
     fgets(emp.jeu.nom, 40, stdin);
     emp.jeu.nom[strlen(emp.jeu.nom)-1] = '\0'; //game's name
 
-    printf("")
+    for(j=0; i<= strlen(tJeu); j++)
+    if (strcmp(emp.jeu.nom, tJeu[i]->nom) == 0){
+        emp.jeu.nbtot=tJeu->nbtot;
+        emp.jeu.nbdisp=tJeu->nbdisp;
+    }
+
+    emp.retard=0;
+    empr=emp;
+}
 
 
 
@@ -129,4 +182,5 @@ void newEmprunt(Client client, Jeu jeu)
     cli.nbEmp = 0;
 
     insTriLiCLi(li, cli);
+    }
 }
