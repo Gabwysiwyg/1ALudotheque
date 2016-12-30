@@ -92,7 +92,7 @@ int subDate(Date d1, Date d2)
     return 365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour;
 }
 
-Jeu * putListInTab (Jeu *tJeu){
+Jeu * putListInTab (Jeu tJeu[]){
      FILE *fe;
      int i=0;
      Jeu j;
@@ -129,7 +129,7 @@ Jeu * putListInTab (Jeu *tJeu){
     return tJeu;
 }
 
-void newEmprunt(Client client, Jeu jeu, Jeu *tJeu)
+Emprunt * newEmprunt(Client client, Jeu jeu, Jeu tJeu[])
 {
     Emprunt emp;
     Emprunt *empr;
@@ -161,6 +161,9 @@ void newEmprunt(Client client, Jeu jeu, Jeu *tJeu)
     printf("Code postal: ");
     scanf("%d", &(emp.client.codeP)); //code postal
 
+    emp.client.paye = false;
+    emp.client.nbEmp = 0;
+
     printf("Nom du jeu :");
     fgets(emp.jeu.nom, 40, stdin);
     emp.jeu.nom[strlen(emp.jeu.nom)-1] = '\0'; //game's name
@@ -169,18 +172,88 @@ void newEmprunt(Client client, Jeu jeu, Jeu *tJeu)
     if (strcmp(emp.jeu.nom, tJeu[i]->nom) == 0){
         emp.jeu.nbtot=tJeu->nbtot;
         emp.jeu.nbdisp=tJeu->nbdisp;
-    }
 
     emp.retard=0;
     empr=emp;
 }
 
+Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[])
+{
+
+    afternoon aft;
+    afternoon af[];
+    int k;
 
 
+    printf("Choose your game's name: \n");
+    fgets(aft.jeu.nom, 40, stdin);
+    aft.jeu.nom[strlen(aft.jeu.nom)-1]='\0';
 
-    cli.paye = false;
-    cli.nbEmp = 0;
+    for(k=0; k<= strlen(tJeu); k++)
+    if (strcmp(aft.jeu.nom, tJeu[i]->nom) == 0){
+        aft.jeu.nbtot=tJeu->nbtot;
+        aft.jeu.nbdisp=tJeu->nbdisp;
 
-    insTriLiCLi(li, cli);
-    }
+    printf("Choose the day :\n");
+    scanf("%d", &(aft.date.jour));
+    printf("choose the month :\n");
+    scanf("%d", &(aft.date.mois));
+    printf("Choose the year :\n");
+    scanf("%d", &(aft.date.an));
+
+    printf("Choose how many people could join this afternoon :\n");
+    scanf("%d", &(aft.nbPtot));
+    aft.nbPdisp=aft.nbPtot;
+
+    af=aft;
 }
+
+
+void regForAfternoon(Client client, ApresMidi apMidi)
+{
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

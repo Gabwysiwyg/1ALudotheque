@@ -26,15 +26,15 @@ typedef struct {
 	int size; //nb of elements in the list
 } liClient;
 
-void initLiCli(liClient *li); //init client list
-void loadLiClient(liClient *li); //load client list from file
-void insTriLiCLi(liClient *li, Client cli); //insert client in sorted list
-Client readClient(FILE *file); //read client info in file
+void initLiCli(liClient *li); //init client list // Done
+void loadLiClient(liClient *li); //load client list from file // Done
+void insTriLiCLi(liClient *li, Client cli); //insert client in sorted list // Done
+Client readClient(FILE *file); //read client info in file // Done
 
-int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname
+int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done
 
 
-void newClient(liClient *li);
-void updateCli(Client client);
-elemCli * findCli(liClient li, char *nom, char *prenom); //returns previous pntr (easier for delete)
-void delCli();
+void newClient(liClient *li); // Done
+void updateCli(Client client); // Done
+elemCli * findCli(liClient li, char *nom, char *prenom); //returns previous pntr (easier for delete) // Done
+void delCli(); // Done

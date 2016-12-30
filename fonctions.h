@@ -11,7 +11,6 @@ typedef struct{
 } Date;
 
 
-
 typedef struct {
 	char nom[40];
 	int nbdisp; //nb d'exemplaires dispo
@@ -30,18 +29,18 @@ typedef struct {
 	Date date;
 	int nbPdisp; //nb de places dispo
 	int nbPtot; //nb de places totales
-} ApresMidi;
+} Afternoon;
 
 
 
-void printMenu(int *choix);
-void Menu ();
+void printMenu(int *choix); // Done
+void Menu (); // Done
 
 
-Jeu * putListInTab (Jeu *tJeu);
-void newEmprunt(Client client, Jeu jeu);
+Jeu * putListInTab (Jeu tJeu[]); // Done
+Emprunt * newEmprunt(Client client, Jeu jeu, Jeu tJeu[]); // Done
 
-void newAfternoon(Jeu jeu, Date date, int nbtot);
+Afetrnoon * newAfternoon(Jeu jeu, Date date, int nbtot); // Done
 void regForAfternoon(Client client, ApresMidi apMidi);
 
-int subDate(Date d1, Date d2);
+int subDate(Date d1, Date d2); // Done
