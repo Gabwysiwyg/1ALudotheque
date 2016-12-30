@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fonctions.h"
+#include "client.h"
 
 int main (void)
 {

@@ -1,4 +1,8 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "fonctions.h"
+
 
 
 void printMenu (int *choix)
@@ -92,7 +96,8 @@ int subDate(Date d1, Date d2)
     return 365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour;
 }
 
-Jeu * putListInTab (Jeu tJeu[]){
+Jeu * putListInTab (Jeu tJeu[])
+{
      FILE *fe;
      int i=0;
      Jeu j;
@@ -113,10 +118,10 @@ Jeu * putListInTab (Jeu tJeu[]){
     j.nom[strlen(j.nom)-1] = '\0';
     scanf("%d %d", &(j.nbdisp), &(j.nbtot));
 
-    while (!feof(fs)){
+    while (!feof(fe)){
         if (i >= 8015){
             printf("Error, index exceeded\n");
-            return -1; 
+            exit(1); 
         }
         tJeu[i]=j;
         i++;
@@ -132,7 +137,7 @@ Jeu * putListInTab (Jeu tJeu[]){
 Emprunt * newEmprunt(Client client, Jeu jeu, Jeu tJeu[])
 {
     Emprunt emp;
-    Emprunt *empr;
+    Emprunt empr[];
     FILE *fs;
     int j;
 
@@ -168,11 +173,12 @@ Emprunt * newEmprunt(Client client, Jeu jeu, Jeu tJeu[])
     fgets(emp.jeu.nom, 40, stdin);
     emp.jeu.nom[strlen(emp.jeu.nom)-1] = '\0'; //game's name
 
-    for(j=0; i<= strlen(tJeu); j++)
-    if (strcmp(emp.jeu.nom, tJeu[i]->nom) == 0){
-        emp.jeu.nbtot=tJeu->nbtot;
-        emp.jeu.nbdisp=tJeu->nbdisp;
-
+    for(j=0; j<= 8015; j++){
+        if (strcmp(emp.jeu.nom, tJeu[j]->nom) == 0){
+            emp.jeu.nbtot=tJeu[j]->nbtot;
+            emp.jeu.nbdisp=tJeu[j]->nbdisp;
+        }
+    }   
     emp.retard=0;
     empr=emp;
 }
@@ -208,21 +214,6 @@ Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[])
     af=aft;
 }
 
-
-void regForAfternoon(Client client, ApresMidi apMidi)
-{
-
-
-
-
-
-
-
-
-
-
-
-}
 
 
 

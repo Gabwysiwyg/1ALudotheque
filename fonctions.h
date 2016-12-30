@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "client.h"
 
 
 typedef struct{
@@ -40,7 +39,7 @@ void Menu (); // Done
 Jeu * putListInTab (Jeu tJeu[]); // Done
 Emprunt * newEmprunt(Client client, Jeu jeu, Jeu tJeu[]); // Done
 
-Afetrnoon * newAfternoon(Jeu jeu, Date date, int nbtot); // Done
-void regForAfternoon(Client client, ApresMidi apMidi);
+Afternoon * newAfternoon(Jeu jeu, Date date, int nbtot); // Done
+void regForAfternoon(Client client, Afternoon aftern);
 
 int subDate(Date d1, Date d2); // Done
