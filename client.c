@@ -28,6 +28,56 @@ Client readClient(FILE *file)
 	return cli;
 }
 
+int loadClient(Client **tCli)
+{
+    int nbmax, i, wh;
+    bool t;
+    Client cli;
+    FILE *fe;
+    fe = fopen("client.don", "r");
+    if (fe == NULL)
+    {
+        printf("can't open file\n");
+        exit(1);
+    }
+
+    fscanf(fe, "%d%*c", &nbmax); //get nb of client in file
+
+    tCli = (Client **)malloc(nbmax * sizeof(Client *)); //alloc memory for array
+    if (tCli == NULL)
+    {
+        printf("malloc tCli\n");
+        exit(1);
+    }
+
+    for (i=0; i < nbmax; i++)
+    {
+        cli = readClient(fe); //get client from file
+
+        wh = findCli(tCli, i, cli.nom, cli.prenom, &t); //find where to insert client
+
+        rightShift(tCli, i, wh); //shift clients
+
+        tCli[wh] = (Client *)malloc(sizeof(Client)); //alloc memory for client
+        if (tCli[wh] == NULL)
+        {
+            printf("malloc tCli[i]\n");
+            exit(1);
+        }
+        *tCli[wh] = cli; //insert client
+    }
+    return nbmax; //return nb of client
+}
+
+void rightShift(Client **tCli, int nbmax, int n)
+{
+    int i;
+    for (i=nbmax; i > n; i--)
+    {
+        tCli[i] = tCli[i-1];
+    }
+}
+
 int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case behavior
 {
     if (strcmp(c1.nom, c2.nom) > 0)
@@ -47,121 +97,43 @@ int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case
 
 
 
-void initLiCli(liClient *li)
-{
-    li->start = NULL;
-    li->end = NULL;
-    li->size = 0;
-}
-
-void insTriLiCLi(liClient *li, Client cli)
-{
-    int i, cmp, cmpNxt;
-
-    elemCli *pnt; //current pos in the list
-    elemCli *elem; //elem to insert
-
-    elem = (elemCli *)malloc(sizeof(elemCli)); //alloc elem
-    if (elem == NULL)
-    {
-        printf("Malloc elemCli failed\n");
-        exit(1);
-    }
-
-    elem->client = cli; //put client to insert inside elem
-    
-
-    if (li->size == 0) //if list is empty
-    {
-        li->start = elem; //set start to element
-        li->end = elem; //set end to element
-        li->size++;
-        return;
-    }
 
 
 
-    pnt = li->start; //set pnt to beginning of the list
 
-    cmp = cmpNomPrenom(pnt->client, elem->client); //cmp name & surname with curr pos
-    if (pnt == li->start && cmp == -1) //if we have to insert in 1st position
-    {
-        elem->nxt = li->start; //put 1st element next to elem (so it's 2nd)
-        li->start = elem; //put element in 1st pos
-        li->size++;
-        return;
-    }
-
-    while(pnt->nxt != NULL)
-    {
-        cmp = cmpNomPrenom(pnt->client, elem->client); //cmp name & surname with curr pos
-        cmpNxt = cmpNomPrenom(pnt->nxt->client, elem->client); //cmp name & surname with next pos
-        
-        if (cmp == 1 & cmpNxt == -1)
-        {
-            elem->nxt = pnt->nxt;
-            pnt->nxt = elem;
-            li->size++;
-            return;
-        }
-
-        pnt = pnt->nxt;
-    }
-
-
-
-    //if we have to insert at the end
-    li->end->nxt = elem; //change pnt of last element
-    li->end = elem; //change end of list
-    li->size++;
-
-}
-
-
-
-void loadLiClient(liClient *li)
-{
-	FILE *fe;
-    int nbmax, i;
-
-	 
-	fe = fopen("client.don", "r");
-	if (fe == NULL)
-	{
-		printf("Can't open file (clients.don)\n");
-		exit(1);
-	}
-
-    fscanf(fe, "%d%*c", &nbmax);
-    printf("nb: %d\n", nbmax);
-
-    for (int i=0; i < nbmax; i++)
-        insTriLiCLi(li, readClient(fe));
-
-    return;
-}
-
-
-elemCli * findCli(liClient li, char *nom, char *prenom)
-{
-    Client tmp;
-    elemCli *pnt;
-
-    strcpy(tmp.nom, nom);
-    strcpy(tmp.prenom, prenom);
-
-    while (pnt->nxt != NULL)
-    if (cmpNomPrenom(pnt->nxt->client, tmp) == 0)
-        return pnt;
-
-    return NULL;
-}
-
-
-void newClient(liClient *li)
+int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS
 {
     Client cli;
+    strcpy(cli.nom, nom);
+    strcpy(cli.prenom, prenom);
 
+    int inf = 0, sup = nb-1, m;
+    while (inf <= sup)
+    {
+        m = (inf+sup)/2;
+        if (cmpNomPrenom(cli, *tCli[m]) < 0)
+            sup = m - 1;
+        else
+            inf = m;
+    }
+    if (cmpNomPrenom(cli, *tCli[m]) == 0)
+        *t = true;
+    else
+        *t = false;
+    return inf;
+}
+
+
+
+
+
+void newClient(Client **tCli, int *nb)
+{
+    int wh;
+    bool t;
+    Client cli;
+    char c;
+    Client **tmp;
     printf("Nom: ");
     fgets(cli.nom, 30, stdin);
     cli.nom[strlen(cli.nom)-1] = '\0'; //nom
@@ -184,10 +156,38 @@ void newClient(liClient *li)
     cli.paye = false;
     cli.nbEmp = 0;
 
-    insTriLiCLi(li, cli);
+    wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t); //find where to insert
+
+    if (t == true) //if user exists
+    {
+        printf("User found, update informations ? (y/n)\n"); //ask to update
+        c = getchar();
+        if (c == 'y')
+        {
+            updateCli(tCli[wh]);        
+            return;
+        }
+        else
+            return;
+    }
+
+    tmp = (Client **)realloc(tCli, (*(nb)++)*sizeof(Client *)); //realloc tmp to contain place for new client
+    
+    rightShift(tmp, *nb, wh); //shift clients 
+
+    tmp[wh] = (Client *)malloc(sizeof(Client)); //alloc memory for new client
+    if (tmp[wh] == NULL)
+    {
+        printf("malloc tCli[i]\n");
+        exit(1);
+    }
+
+    *tmp[wh] = cli; //put new client in array
+    tCli = tmp; //replace old array with new
+
 }
 
-void updateClient(Client *cli)
+void updateCli(Client *cli)
 {
     char ans;
     
@@ -235,10 +235,32 @@ void updateClient(Client *cli)
 	}
 }
 
-void delClient(liClient *li, char *nom, char *prenom)
+void leftShift(Client **tCli, int nb, int n) 
 {
-    elemCli *tmp, *cli = findCli(*li, nom, prenom);
-    tmp = cli->nxt;
-    cli->nxt = cli->nxt->nxt;
-    free(tmp);
+    int i;
+    for (i = n; i < nb; i++)
+        tCli[i] = tCli[i+1];
+}
+
+void delClient(Client **tCli, int *nb, char *nom, char *prenom)
+{
+    bool t;
+    int wh;
+    Client **tmp;
+    wh = findCli(tCli, *nb, nom, prenom, &t);
+    if (t == false)
+    {
+        printf("user not found\n");
+        return;
+    }
+
+    leftShift(tCli, *nb, wh);
+    tmp = (Client **)realloc(tCli, (*nb-1)*sizeof(Client *));
+    if (tmp == NULL)
+    {
+        printf("malloc tmpDel\n");
+        exit(1);
+    }
+
+    tCli = tmp;
 }

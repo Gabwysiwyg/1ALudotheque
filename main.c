@@ -7,27 +7,19 @@
 int main (void)
 {
     //Menu();
-    liClient li;
-    elemCli *pnt;
+    Client **tCli;
+    int nb=0, i;
 
-    initLiCli(&li);
-    loadLiClient(&li);
-    pnt = li.start;
+    nb = loadClient(tCli);
 
-    while (pnt != NULL)
-    {
-    	printf("%s\n", pnt->client.nom);
-    	pnt = pnt->nxt;
-    }
-    printf("\n");
-    newClient(&li);
-    pnt = li.start;
+    newClient(tCli, nb);
 
-    while (pnt != NULL)
-    {
-        printf("%s  %s\n", pnt->client.nom, pnt->client.prenom);
-        pnt = pnt->nxt;
-    }
+    for(i=0; i < nb; i++)
+        printf("%s, %s\n",tCli[i]->nom, tCli[i]->prenom);
+
+
+
+
 
 	return 0;
 }

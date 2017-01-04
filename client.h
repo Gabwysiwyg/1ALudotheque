@@ -14,27 +14,18 @@ typedef struct {
 	int nbEmp;
 } Client;
 
-typedef struct elemCli elemCli;
-struct elemCli {
-	Client client;
-	elemCli *nxt;
-};
 
-typedef struct {
-	elemCli *start; //pntr to the first element of the list
-	elemCli *end; //pntr to the last element of the list
-	int size; //nb of elements in the list
-} liClient;
 
-void initLiCli(liClient *li); //init client list // Done
-void loadLiClient(liClient *li); //load client list from file // Done
-void insTriLiCLi(liClient *li, Client cli); //insert client in sorted list // Done
+
+
 Client readClient(FILE *file); //read client info in file // Done
+int loadClient(Client **tCli); //load tCli from file, and sort them while inserting
+void rightShift(Client **tCli, int nbmax, int n);
 
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done
 
-
-void newClient(liClient *li); // Done
-void updateCli(Client client); // Done
-elemCli * findCli(liClient li, char *nom, char *prenom); //returns previous pntr (easier for delete) // Done
-void delCli(); // Done
+int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t); //DICHOTOMIQUE
+void newClient(); // Done
+void updateCli(Client *cli); // Done
+void leftShift(Client **tCli, int nb, int n);
+void delClient(Client **tCli, int *nb, char *nom, char *prenom);
