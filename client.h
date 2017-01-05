@@ -5,18 +5,38 @@
 typedef enum {false, true} bool;
 
 typedef struct {
+	char nom[100];
+	int nbdisp; //nb d'exemplaires dispo
+	int nbtot; //nb d'exemplaires total
+} Jeu;
+
+typedef struct{
+	int jour;
+	int mois;
+	int an;
+} Date;
+
+typedef struct {
+	Jeu jeu;
+	Date date;
+	bool retard; //1 si en retard
+} Emprunt;
+
+typedef struct maillon {
+	Emprunt empr;
+	struct maillon *nxt;
+} Maillon, *lEmprunt;
+
+typedef struct {
 	char nom[30];
 	char prenom[20];
 	char adresse[50];
 	char ville[20];
 	int codeP;
+	lEmprunt lEmpr;
 	bool paye; //1 si il a payé
 	int nbEmp;
 } Client;
-
-
-
-
 
 Client readClient(FILE *file); //read client info in file // Done
 int loadClient(Client **tCli); //load tCli from file, and sort them while inserting
@@ -29,3 +49,5 @@ void newClient(); // Done
 void updateCli(Client *cli); // Done
 void leftShift(Client **tCli, int nb, int n);
 void delClient(Client **tCli, int *nb, char *nom, char *prenom);
+lEmprunt insEmpr(Client cli, Emprunt empr);
+int nbEmpr(Client cli);

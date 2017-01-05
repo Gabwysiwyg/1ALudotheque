@@ -96,10 +96,18 @@ int subDate(Date d1, Date d2)
     return 365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour;
 }
 
-Jeu * putListInTab (Jeu tJeu[])
+
+Jeu readJeu(FILE *fe)
+{
+    Jeu game;
+    fscanf(fe, "%s\n%d %d\n", game.nom, game.nbdisp, game.nbtot);
+    return game;
+}
+
+int loadGameList (Jeu **tJeu)
 {
      FILE *fe;
-     int i=0;
+     int i=0, nb;
      Jeu j;
 
     fe=fopen("gamelist.don", "r");
@@ -108,82 +116,90 @@ Jeu * putListInTab (Jeu tJeu[])
         exit(1);
     }
 
-    tJeu=(Jeu *)malloc(8015*sizeof(Jeu));
+    fscanf(fe, "%d\n", &nb);
+    tJeu=(Jeu **)malloc(nb*sizeof(Jeu *));
+    
     if (tJeu==NULL){
         printf("Issue during allocation\n");
         exit(1);
     }
 
-    fgets(j.nom, 40, fe);
-    j.nom[strlen(j.nom)-1] = '\0';
-    scanf("%d %d", &(j.nbdisp), &(j.nbtot));
-
-    while (!feof(fe)){
-        if (i >= 8015){
-            printf("Error, index exceeded\n");
-            exit(1); 
+    for (i=0; i < nb; i++)
+    {
+        tJeu[i] = (Jeu *)malloc(sizeof(Jeu));
+        if (tJeu[i] == NULL)
+        {
+            printf("error malloc tJeu[i]\n");
+            exit(1);
         }
-        tJeu[i]=j;
-        i++;
-        fgets(j.nom, 40, fe);
-        j.nom[strlen(j.nom)-1] = '\0';
-        scanf("%d %d", &(j.nbdisp), &(j.nbtot));
+        *tJeu[i] = readJeu(fe);
     }
 
     fclose(fe);
-    return tJeu;
+    return nb;
 }
 
-Emprunt * newEmprunt(Client client, Jeu jeu, Jeu tJeu[])
+int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS
 {
-    Emprunt emp;
-    Emprunt empr[];
-    FILE *fs;
-    int j;
+    int inf = 0, sup = nb-1, m;
+    while (inf <= sup)
+    {
+        m = (inf+sup)/2;
+        if (strcmp(nom, tJeu[m]->nom) < 0)
+            sup = m - 1;
+        else
+            inf = m;
+    }
+    if (strcmp(nom, tJeu[m]->nom) == 0)
+        *t = true;
+    else
+        *t = false;
+    return inf;
+}
 
-    fs=fopen("gamelist.don", "r");
-    if (fs ==NULL){
-        printf("Issue during file oppening\n");
-        exit(1);
+void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc)
+{
+    Emprunt empr;
+    bool t;
+    int iCli, iJeu;
+
+    iCli = findCli(tCli, nbc, nom, prenom, &t); //on cherche le client qui veut emprunter
+    if (t == false)
+    {
+        printf("user not found\n");
+        return;
+    }
+    iJeu = findJeu(tJeu, nbj, game, &t); //on cherche le jeu a emprunter
+    if (t == false)
+    {
+        printf("user not found\n");
+        return;
+    }
+    if (tJeu[iJeu]->nbdisp == 0) //on regarde si le jeu est disponible
+    {
+        printf("Ce jeu n'est plus disponible\n");
+        return;
+    }
+    //on créé l'emprunt
+    empr.jeu = *tJeu[iJeu];
+    empr.date.an = system("date +%Y");
+    empr.date.mois = system("date +%m");
+    empr.date.jour = system("date +%d");
+
+    empr.retard = false;
+
+    if (nbEmpr(*tCli[iCli]) == 3) //on verifie si le client a moins de 3 emprunts en cours
+    {
+        printf("Vous ne pouvez plus emprunter\n");
+        return;
     }
 
-    printf("Nom: ");
-    fgets(emp.client.nom, 30, stdin);
-    emp.client.nom[strlen(emp.client.nom)-1] = '\0'; //nom
+    tCli[iCli]->lEmpr = insEmpr(*tCli[iCli], empr); //on insere l'emprunt
+    tJeu[iJeu]->nbdisp -= 1; //ou enleve un exemplaire disponible du jeu
 
-    printf("Prenom: ");
-    fgets(emp.client.prenom, 20, stdin);
-    emp.client.prenom[strlen(emp.client.prenom)-1] = '\0'; //prenom
-
-    printf("Adresse: ");
-    fgets(emp.client.adresse, 50, stdin);
-    emp.client.adresse[strlen(emp.client.adresse)-1] = '\0'; //adresse
-
-    printf("Ville: ");
-    fgets(emp.client.ville, 20, stdin);
-    emp.client.ville[strlen(emp.client.ville)-1] = '\0'; //ville
-
-    printf("Code postal: ");
-    scanf("%d", &(emp.client.codeP)); //code postal
-
-    emp.client.paye = false;
-    emp.client.nbEmp = 0;
-
-    printf("Nom du jeu :");
-    fgets(emp.jeu.nom, 40, stdin);
-    emp.jeu.nom[strlen(emp.jeu.nom)-1] = '\0'; //game's name
-
-    for(j=0; j<= 8015; j++){
-        if (strcmp(emp.jeu.nom, tJeu[j]->nom) == 0){
-            emp.jeu.nbtot=tJeu[j]->nbtot;
-            emp.jeu.nbdisp=tJeu[j]->nbdisp;
-        }
-    }   
-    emp.retard=0;
-    empr=emp;
 }
 
-Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[])
+/*Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[])
 {
 
     afternoon aft;
@@ -212,7 +228,7 @@ Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[])
     aft.nbPdisp=aft.nbPtot;
 
     af=aft;
-}
+}*/
 
 
 

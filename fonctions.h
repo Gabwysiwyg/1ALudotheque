@@ -3,25 +3,9 @@
 #include <string.h>
 #include "client.h"
 
-typedef struct{
-	int jour;
-	int mois;
-	int an;
-} Date;
 
 
-typedef struct {
-	char nom[40];
-	int nbdisp; //nb d'exemplaires dispo
-	int nbtot; //nb d'exemplaires total
-} Jeu;
 
-typedef struct {
-	Client client;
-	Jeu jeu;
-	Date date;
-	bool retard; //1 si en retard
-} Emprunt;
 
 typedef struct {
 	Jeu jeu;
@@ -35,9 +19,12 @@ typedef struct {
 void printMenu(int *choix); // Done
 void Menu (); // Done
 
+Jeu readJeu(FILE *fe);
+int loadGameList (Jeu **tJeu); // Done
+int findJeu(Jeu **tJeu, int nb, char *nom, bool *t); //DICHOTOMIQUE VOIR COURS
 
-Jeu * putListInTab (Jeu tJeu[]); // Done
-Emprunt * newEmprunt(Client client, Jeu jeu, Jeu tJeu[]); // Done
+
+void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc);
 
 Afternoon * newAfternoon(Jeu jeu, Date date, int nbtot); // Done
 void regForAfternoon(Client client, Afternoon aftern);

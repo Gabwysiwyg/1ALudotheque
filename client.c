@@ -24,7 +24,7 @@ Client readClient(FILE *file)
 
 	cli.paye = 0;
 	cli.nbEmp = 0;
-
+    cli.lEmpr = NULL;
 	return cli;
 }
 
@@ -66,6 +66,8 @@ int loadClient(Client **tCli)
         }
         *tCli[wh] = cli; //insert client
     }
+
+    fclose(fe);
     return nbmax; //return nb of client
 }
 
@@ -263,4 +265,32 @@ void delClient(Client **tCli, int *nb, char *nom, char *prenom)
     }
 
     tCli = tmp;
+}
+
+
+
+lEmprunt insEmpr(Client cli, Emprunt emprunt)
+{
+    Maillon *m;
+    m = (Maillon *)malloc(sizeof(Emprunt));
+    if (m == NULL)
+    {
+        printf("error malloc maillon emprunt\n");
+        exit(1);
+    }
+
+    m->empr = emprunt;
+    m->nxt = cli.lEmpr;
+    return m;
+}
+
+int nbEmpr(Client cli)
+{
+    int nb = 0;
+    while (cli.lEmpr != NULL)
+    {
+        cli.lEmpr = cli.lEmpr->nxt;
+        nb++;
+    }
+    return nb;
 }
