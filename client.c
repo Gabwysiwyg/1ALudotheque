@@ -51,21 +51,23 @@ int loadClient(Client **tCli)
     }
 
     for (i=0; i < nbmax; i++)
-    {
+    {   
         cli = readClient(fe); //get client from file
 
         wh = findCli(tCli, i, cli.nom, cli.prenom, &t); //find where to insert client
-
         rightShift(tCli, i, wh); //shift clients
 
         tCli[wh] = (Client *)malloc(sizeof(Client)); //alloc memory for client
+        
         if (tCli[wh] == NULL)
         {
             printf("malloc tCli[i]\n");
             exit(1);
         }
         *tCli[wh] = cli; //insert client
+
     }
+    printf("%s\n", tCli[0]->nom);
 
     fclose(fe);
     return nbmax; //return nb of client
@@ -83,15 +85,15 @@ void rightShift(Client **tCli, int nbmax, int n)
 int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case behavior
 {
     if (strcmp(c1.nom, c2.nom) > 0)
-        return -1;
-    else if(strcmp(c1.nom, c2.nom) < 0)
         return 1;
+    else if(strcmp(c1.nom, c2.nom) < 0)
+        return -1;
 
     //IF NAME ARE THE SAME
     else if (strcmp(c1.prenom, c2.prenom) > 0)
-        return -1;
-    else if(strcmp(c1.prenom, c2.prenom) < 0)
         return 1;
+    else if(strcmp(c1.prenom, c2.prenom) < 0)
+        return -1;
     else //if name & surname are equal
         return 0;
 
@@ -105,23 +107,30 @@ int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case
 
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS
 {
+
     Client cli;
+
     strcpy(cli.nom, nom);
     strcpy(cli.prenom, prenom);
 
+    *t = false;
+    //printf("yolo\n");
     int inf = 0, sup = nb-1, m;
     while (inf <= sup)
     {
         m = (inf+sup)/2;
+
+        if (cmpNomPrenom(cli, *tCli[m]) == 0)
+        {
+            *t = true;
+            return m;
+        }
         if (cmpNomPrenom(cli, *tCli[m]) < 0)
-            sup = m - 1;
+            sup = m-1;
         else
-            inf = m;
+            inf = m+1;
     }
-    if (cmpNomPrenom(cli, *tCli[m]) == 0)
-        *t = true;
-    else
-        *t = false;
+    
     return inf;
 }
 
@@ -154,12 +163,13 @@ void newClient(Client **tCli, int *nb)
 
     printf("Code postal: ");
     scanf("%d", &(cli.codeP)); //code postal
-
     cli.paye = false;
     cli.nbEmp = 0;
+    cli.lEmpr = NULL;
+
+    printf("%s\n", tCli[0]->prenom);
 
     wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t); //find where to insert
-
     if (t == true) //if user exists
     {
         printf("User found, update informations ? (y/n)\n"); //ask to update
@@ -172,8 +182,8 @@ void newClient(Client **tCli, int *nb)
         else
             return;
     }
-
-    tmp = (Client **)realloc(tCli, (*(nb)++)*sizeof(Client *)); //realloc tmp to contain place for new client
+    (*nb)++;
+    tmp = (Client **)realloc(tCli, (*nb)*sizeof(Client *)); //realloc tmp to contain place for new client
     
     rightShift(tmp, *nb, wh); //shift clients 
 

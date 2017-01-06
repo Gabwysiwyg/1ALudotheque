@@ -8,17 +8,16 @@ int main (void)
     //Menu();
     Client **tCli;
     int nb=0, i;
-
     nb = loadClient(tCli);
 
-    newClient(tCli, nb);
+    //newClient(tCli, &nb);
+    printf("pls %s\n", tCli[0]->nom);
 
+    printf("nb: %d\n", nb);
     for(i=0; i < nb; i++)
         printf("%s, %s\n",tCli[i]->nom, tCli[i]->prenom);
 
 
-
-
-
+    free(tCli);
 	return 0;
 }

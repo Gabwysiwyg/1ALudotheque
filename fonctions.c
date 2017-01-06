@@ -100,7 +100,7 @@ int subDate(Date d1, Date d2)
 Jeu readJeu(FILE *fe)
 {
     Jeu game;
-    fscanf(fe, "%s\n%d %d\n", game.nom, game.nbdisp, game.nbtot);
+    fscanf(fe, "%s\n%d %d\n", game.nom, &(game.nbdisp), &(game.nbtot));
     return game;
 }
 
@@ -108,7 +108,6 @@ int loadGameList (Jeu **tJeu)
 {
      FILE *fe;
      int i=0, nb;
-     Jeu j;
 
     fe=fopen("gamelist.don", "r");
     if (fe ==NULL){
