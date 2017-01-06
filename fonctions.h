@@ -20,7 +20,7 @@ void printMenu(int *choix); // Done
 void Menu (); // Done
 
 Jeu readJeu(FILE *fe);
-int loadGameList (Jeu **tJeu); // Done
+Jeu **loadGameList (int *nb); // Done
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t); //DICHOTOMIQUE VOIR COURS
 
 

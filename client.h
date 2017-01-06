@@ -39,7 +39,7 @@ typedef struct {
 } Client;
 
 Client readClient(FILE *file); //read client info in file // Done
-int loadClient(Client **tCli); //load tCli from file, and sort them while inserting
+Client ** loadClient(int *nbmax); //load tCli from file, and sort them while inserting
 void rightShift(Client **tCli, int nbmax, int n);
 
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done

@@ -104,25 +104,26 @@ Jeu readJeu(FILE *fe)
     return game;
 }
 
-int loadGameList(Jeu **tJeu)
+Jeu **loadGameList (int *nb)
 {
-     FILE *fe;
-     int i=0, nb;
+    FILE *fe;
+    int i=0;
+    Jeu **tJeu;
 
     fe=fopen("gamelist.don", "r");
     if (fe ==NULL){
         printf("Issue during file oppening\n");
         exit(1);
     }
-    fscanf(fe, "%d\n", &nb);
-    tJeu=(Jeu **)malloc(nb*sizeof(Jeu *));
+    fscanf(fe, "%d\n", nb);
+    tJeu=(Jeu **)malloc(*nb*sizeof(Jeu *));
     
     if (tJeu==NULL){
         printf("Issue during allocation\n");
         exit(1);
     }
 
-    for (i=0; i < nb-1; i++)
+    for (i=0; i < *nb-1; i++)
     {
         tJeu[i] = (Jeu *)malloc(sizeof(Jeu));
         if (tJeu[i] == NULL)
@@ -135,7 +136,7 @@ int loadGameList(Jeu **tJeu)
     }
 
     fclose(fe);
-    return nb;
+    return tJeu;
 }
 
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS
