@@ -29,11 +29,11 @@ Client readClient(FILE *file)
 }
 
 
-int loadClient(Client **tCli)
+Client ** loadClient(int *nbmax)
 {
-    int nbmax, i, wh;
+    int i, wh;
     bool t;
-    Client cli;
+    Client cli, **tCli;
     FILE *fe;
     fe = fopen("client.don", "r");
     if (fe == NULL)
@@ -42,16 +42,16 @@ int loadClient(Client **tCli)
         exit(1);
     }
 
-    fscanf(fe, "%d%*c", &nbmax); //get nb of client in file
+    fscanf(fe, "%d%*c", nbmax); //get nb of client in file
 
-    tCli = (Client **)malloc(nbmax * sizeof(Client *)); //alloc memory for array
+    tCli = (Client **)malloc(*nbmax * sizeof(Client *)); //alloc memory for array
     if (tCli == NULL)
     {
         printf("malloc tCli\n");
         exit(1);
     }
 
-    for (i=0; i < nbmax; i++)
+    for (i=0; i < *nbmax; i++)
     {   
 
         tCli[i] = (Client *)malloc(sizeof(Client)); //alloc memory for client
@@ -66,7 +66,7 @@ int loadClient(Client **tCli)
     printf("%s\n", tCli[0]->nom);
 
     fclose(fe);
-    return nbmax; //return nb of client
+    return tCli; //return nb of client
 }
 
 void rightShift(Client **tCli, int nbmax, int n)

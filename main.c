@@ -8,7 +8,7 @@ int main (void)
     //Menu();
     Client **tCli;
     int nb=0, i;
-    nb = loadClient(tCli);
+    tCli = loadClient(&nb);
 
     //newClient(tCli, &nb);
 
