@@ -104,7 +104,7 @@ Jeu readJeu(FILE *fe)
     return game;
 }
 
-int loadGameList (Jeu **tJeu)
+int loadGameList(Jeu **tJeu)
 {
      FILE *fe;
      int i=0, nb;
@@ -114,7 +114,6 @@ int loadGameList (Jeu **tJeu)
         printf("Issue during file oppening\n");
         exit(1);
     }
-
     fscanf(fe, "%d\n", &nb);
     tJeu=(Jeu **)malloc(nb*sizeof(Jeu *));
     
@@ -123,14 +122,15 @@ int loadGameList (Jeu **tJeu)
         exit(1);
     }
 
-    for (i=0; i < nb; i++)
+    for (i=0; i < nb-1; i++)
     {
         tJeu[i] = (Jeu *)malloc(sizeof(Jeu));
         if (tJeu[i] == NULL)
         {
             printf("error malloc tJeu[i]\n");
             exit(1);
-        }
+       }
+
         *tJeu[i] = readJeu(fe);
     }
 

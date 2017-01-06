@@ -28,6 +28,7 @@ Client readClient(FILE *file)
 	return cli;
 }
 
+
 int loadClient(Client **tCli)
 {
     int nbmax, i, wh;
@@ -52,19 +53,14 @@ int loadClient(Client **tCli)
 
     for (i=0; i < nbmax; i++)
     {   
-        cli = readClient(fe); //get client from file
 
-        wh = findCli(tCli, i, cli.nom, cli.prenom, &t); //find where to insert client
-        rightShift(tCli, i, wh); //shift clients
-
-        tCli[wh] = (Client *)malloc(sizeof(Client)); //alloc memory for client
-        
-        if (tCli[wh] == NULL)
+        tCli[i] = (Client *)malloc(sizeof(Client)); //alloc memory for client
+        if (tCli[i] == NULL)
         {
             printf("malloc tCli[i]\n");
             exit(1);
         }
-        *tCli[wh] = cli; //insert client
+        *tCli[i] = readClient(fe); //get client from file //insert client
 
     }
     printf("%s\n", tCli[0]->nom);

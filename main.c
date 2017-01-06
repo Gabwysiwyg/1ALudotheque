@@ -11,13 +11,12 @@ int main (void)
     nb = loadClient(tCli);
 
     //newClient(tCli, &nb);
-    printf("pls %s\n", tCli[0]->nom);
 
     printf("nb: %d\n", nb);
     for(i=0; i < nb; i++)
         printf("%s, %s\n",tCli[i]->nom, tCli[i]->prenom);
 
 
-    free(tCli);
+    free(*tCli);
 	return 0;
 }
