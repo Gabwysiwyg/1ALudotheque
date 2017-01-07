@@ -45,7 +45,7 @@ void rightShift(Client **tCli, int nbmax, int n);
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done
 
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t); //DICHOTOMIQUE
-void newClient(); // Done
+Client ** newClient(Client **tCli, int *nb); // Done
 void updateCli(Client *cli); // Done
 void leftShift(Client **tCli, int nb, int n);
 void delClient(Client **tCli, int *nb, char *nom, char *prenom);

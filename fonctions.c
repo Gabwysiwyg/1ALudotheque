@@ -140,31 +140,29 @@ Jeu **loadGameList (int *nb)
     return tJeu;
 }
 
-int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS
+int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 {
     int inf = 0, sup = nb-1, m, j;
-    for (j=0; j<strlen(nom); j++)
-        nom[j]=tolower(nom[j]);
     while (inf <= sup)
     {
         m = (inf+sup)/2;
-        for (j=0; j<strlen(tJeu[m]->nom); j++)
-            tJeu[m]->nom[j]=tolower(tJeu[m]->nom[j]);
         if (strcmp(nom, tJeu[m]->nom) < 0)
-            sup = m - 1;
+            return m;
+        if (strcmp(nom, tJeu[m]->nom) == 0)
+        {
+            *t = true;
+            sup = m-1;
+        }
         else
-            inf = m;
+        {
+            *t = false;
+            inf = m+1;
+        }
     }
-    for (j=0; j<strlen(tJeu[m]->nom); j++)
-        tJeu[m]->nom[j]=tolower(tJeu[m]->nom[j]);
-    if (strcmp(nom, tJeu[m]->nom) == 0)
-        *t = true;
-    else
-        *t = false;
     return inf;
 }
 
-void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc)
+void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc) 
 {
     Emprunt empr;
     bool t;
@@ -176,6 +174,7 @@ void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client
         printf("user not found\n");
         return;
     }
+
     iJeu = findJeu(tJeu, nbj, game, &t); //on cherche le jeu a emprunter
     if (t == false)
     {

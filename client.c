@@ -78,7 +78,7 @@ void rightShift(Client **tCli, int nbmax, int n)
     }
 }
 
-int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case behavior
+int cmpNomPrenom(Client c1, Client c2)
 {
     int j;
     for (j = 0 ; j<20 ; j++){
@@ -108,7 +108,7 @@ int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case
 
 
 
-int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS
+int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 {
 
     Client cli;
@@ -121,16 +121,18 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     while (inf <= sup)
     {
         m = (inf+sup)/2;
-
+        if (cmpNomPrenom(cli, *tCli[m]) < 0)
+            return m;
         if (cmpNomPrenom(cli, *tCli[m]) == 0)
         {
             *t = true;
-            return m;
-        }
-        if (cmpNomPrenom(cli, *tCli[m]) < 0)
             sup = m-1;
+        }
         else
+        {
+            *t = false;
             inf = m+1;
+        }
     }
     
     return inf;
@@ -140,7 +142,7 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
 
 
 
-void newClient(Client **tCli, int *nb) //TODO fix segfault au nveau du tab tmp
+Client ** newClient(Client **tCli, int *nb) //TODO fix segfault au nveau du tab tmp
 {
     int wh;
     bool t;
@@ -178,12 +180,13 @@ void newClient(Client **tCli, int *nb) //TODO fix segfault au nveau du tab tmp
         if (rep == 'y')
         {
             updateCli(tCli[wh]);        
-            return;
+            return tCli;
         }
         else
-            return;
+            return tCli;
     }
     (*nb)++;
+
     tmp = (Client **)realloc(tCli, (*nb)*sizeof(Client *)); //realloc tmp to contain place for new client
     
     rightShift(tmp, *nb, wh); //shift clients 
@@ -198,6 +201,7 @@ void newClient(Client **tCli, int *nb) //TODO fix segfault au nveau du tab tmp
 
     *tmp[wh] = cli; //put new client in array
     tCli = tmp; //replace old array with new
+    return tCli;
 }
 
 void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
@@ -267,7 +271,8 @@ void delClient(Client **tCli, int *nb, char *nom, char *prenom)
     }
 
     leftShift(tCli, *nb, wh);
-    tmp = (Client **)realloc(tCli, (*nb-1)*sizeof(Client *));
+    (*nb)--;
+    tmp = (Client **)realloc(tCli, (*nb)*sizeof(Client *));
     if (tmp == NULL)
     {
         printf("malloc tmpDel\n");
