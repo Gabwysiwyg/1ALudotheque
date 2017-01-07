@@ -140,7 +140,7 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
 
 
 
-void newClient(Client **tCli, int *nb)
+void newClient(Client **tCli, int *nb) //TODO fix segfault au nveau du tab tmp
 {
     int wh;
     bool t;

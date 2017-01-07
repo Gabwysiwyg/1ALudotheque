@@ -206,7 +206,7 @@ void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client
 
 }
 
-/*Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[])
+/*Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[]) //TODO Faire la fonction
 {
 
     afternoon aft;
