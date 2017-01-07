@@ -145,19 +145,18 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
     int inf = 0, sup = nb-1, m, j;
     while (inf <= sup)
     {
-        m = (inf+sup)/2;
-        if (strcmp(nom, tJeu[m]->nom) < 0)
-            return m;
+        m = (sup+inf)/2;
+
         if (strcmp(nom, tJeu[m]->nom) == 0)
         {
             *t = true;
+            return m;
+        }
+        else if (strcmp(nom, tJeu[m]->nom) < 0)
             sup = m-1;
-        }
         else
-        {
-            *t = false;
             inf = m+1;
-        }
+
     }
     return inf;
 }

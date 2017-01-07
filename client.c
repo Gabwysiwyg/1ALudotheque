@@ -120,19 +120,18 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     int inf = 0, sup = nb-1, m;
     while (inf <= sup)
     {
-        m = (inf+sup)/2;
-        if (cmpNomPrenom(cli, *tCli[m]) < 0)
-            return m;
+        m = (sup+inf)/2;
+
         if (cmpNomPrenom(cli, *tCli[m]) == 0)
         {
             *t = true;
+            return m;
+        }
+        else if (cmpNomPrenom(cli, *tCli[m]) < 0)
             sup = m-1;
-        }
         else
-        {
-            *t = false;
             inf = m+1;
-        }
+
     }
     
     return inf;
