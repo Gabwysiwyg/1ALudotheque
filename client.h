@@ -28,7 +28,7 @@ typedef struct maillon {
 } Maillon, *lEmprunt;
 
 typedef struct {
-	char nom[30];
+	char nom[20];
 	char prenom[20];
 	char adresse[50];
 	char ville[20];

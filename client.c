@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "client.h"
 
 
@@ -8,7 +9,7 @@ Client readClient(FILE *file)
 {
 	Client cli;
 
-	fgets(cli.nom, 30, file);
+	fgets(cli.nom, 20, file);
     cli.nom[strlen(cli.nom)-1] = '\0'; //nom
 
 	fgets(cli.prenom, 20, file);
@@ -63,7 +64,6 @@ Client ** loadClient(int *nbmax)
         *tCli[i] = readClient(fe); //get client from file //insert client
 
     }
-    printf("%s\n", tCli[0]->nom);
 
     fclose(fe);
     return tCli; //return nb of client
@@ -80,6 +80,13 @@ void rightShift(Client **tCli, int nbmax, int n)
 
 int cmpNomPrenom(Client c1, Client c2) //TODO: investigate lower case/upper case behavior
 {
+    int j;
+    for (j = 0 ; j<20 ; j++){
+        c1.nom[j]=tolower(c1.nom[j]);
+        c2.nom[j]=tolower(c2.nom[j]);
+        c1.prenom[j]=tolower(c1.prenom[j]);
+        c2.prenom[j]=tolower(c2.prenom[j]);
+    }
     if (strcmp(c1.nom, c2.nom) > 0)
         return 1;
     else if(strcmp(c1.nom, c2.nom) < 0)
@@ -110,7 +117,6 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     strcpy(cli.prenom, prenom);
 
     *t = false;
-    //printf("yolo\n");
     int inf = 0, sup = nb-1, m;
     while (inf <= sup)
     {
@@ -139,7 +145,7 @@ void newClient(Client **tCli, int *nb)
     int wh;
     bool t;
     Client cli;
-    char c;
+    char rep;
     Client **tmp;
     printf("Nom: ");
     fgets(cli.nom, 30, stdin);
@@ -163,14 +169,13 @@ void newClient(Client **tCli, int *nb)
     cli.nbEmp = 0;
     cli.lEmpr = NULL;
 
-    printf("%s\n", tCli[0]->prenom);
-
     wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t); //find where to insert
+
     if (t == true) //if user exists
     {
         printf("User found, update informations ? (y/n)\n"); //ask to update
-        c = getchar();
-        if (c == 'y')
+        scanf("%*c%c", &rep);
+        if (rep == 'y')
         {
             updateCli(tCli[wh]);        
             return;
@@ -190,56 +195,55 @@ void newClient(Client **tCli, int *nb)
         exit(1);
     }
 
+
     *tmp[wh] = cli; //put new client in array
     tCli = tmp; //replace old array with new
-
 }
 
-void updateCli(Client *cli)
+void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
 {
     char ans;
     
-    printf("Update nom ?");
-    ans = getchar();
+    printf("Update nom ? (o/n)\n");
+    scanf("%*c%c", &ans);
     if (ans == 'o')
     {
-        printf("Nouveau nom: ");
+        printf("Nouveau nom: \n");
         scanf("%s", cli->nom);
     }
 
-    printf("Update prenom ?");
-    ans = getchar();
+    printf("Update prenom ? (o/n)\n");
+    scanf("%*c%c", &ans);
     if (ans == 'o')
     {
-        printf("Nouveau prenom: ");
+        printf("Nouveau prenom: \n");
         scanf("%s", cli->prenom);
     }
 
-    printf("Update adresse ?");
-    ans = getchar();
+    printf("Update adresse ? (o/n)\n");
+    scanf("%*c%c", &ans);
     if (ans == 'o')
     {
-        printf("Nouvelle adresse: ");
+        printf("Nouvelle adresse: \n");
         scanf("%s", cli->adresse);
     }
 
-    printf("Update code postal ?");
-    ans = getchar();
+    printf("Update code postal ? (o/n)\n");
+    scanf("%*c%c", &ans);
     if (ans == 'o') //if we change postal code we also change city
     {
-        printf("Nouveau code postal: ");
+        printf("Nouveau code postal: \n");
         scanf("%s", cli->nom);
-        printf("Nouvelle ville: ");
+        printf("Nouvelle ville: \n");
         scanf("%s", cli->ville);
     }
-    else {
-	    printf("Update ville ?");
-	    ans = getchar();
-	    if (ans == 'o')
-	    {
-	        printf("Nouvelle ville: ");
-	        scanf("%s", cli->ville);
-	    }
+
+	printf("Update ville ? (o/n)\n");
+	scanf("%*c%c", &ans);
+	if (ans == 'o')
+	{
+	   printf("Nouvelle ville: \n");
+	   scanf("%s", cli->ville);
 	}
 }
 

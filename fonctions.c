@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "fonctions.h"
 
 
@@ -141,15 +142,21 @@ Jeu **loadGameList (int *nb)
 
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS
 {
-    int inf = 0, sup = nb-1, m;
+    int inf = 0, sup = nb-1, m, j;
+    for (j=0; j<strlen(nom); j++)
+        nom[j]=tolower(nom[j]);
     while (inf <= sup)
     {
         m = (inf+sup)/2;
+        for (j=0; j<strlen(tJeu[m]->nom); j++)
+            tJeu[m]->nom[j]=tolower(tJeu[m]->nom[j]);
         if (strcmp(nom, tJeu[m]->nom) < 0)
             sup = m - 1;
         else
             inf = m;
     }
+    for (j=0; j<strlen(tJeu[m]->nom); j++)
+        tJeu[m]->nom[j]=tolower(tJeu[m]->nom[j]);
     if (strcmp(nom, tJeu[m]->nom) == 0)
         *t = true;
     else
