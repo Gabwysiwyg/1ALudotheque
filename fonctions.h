@@ -23,8 +23,8 @@ Jeu readJeu(FILE *fe);
 Jeu **loadGameList (int *nb); // Done
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t); //DICHOTOMIQUE VOIR COURS
 
-
 void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc);
+//void saveEmp()
 
 Afternoon * newAfternoon(Jeu jeu, Date date, int nbtot); // Done
 void regForAfternoon(Client client, Afternoon aftern);

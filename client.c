@@ -108,7 +108,7 @@ int cmpNomPrenom(Client c1, Client c2)
 
 
 
-int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
+int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS 
 {
 
     Client cli;

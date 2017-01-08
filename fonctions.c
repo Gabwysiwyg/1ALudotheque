@@ -152,7 +152,7 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
             *t = true;
             return m;
         }
-        else if (strcmp(nom, tJeu[m]->nom) < 0)
+        if (strcmp(nom, tJeu[m]->nom) < 0)
             sup = m-1;
         else
             inf = m+1;
@@ -160,6 +160,8 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
     }
     return inf;
 }
+
+//void saveEmp(Client **tClient)
 
 void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc) 
 {
@@ -177,7 +179,7 @@ void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client
     iJeu = findJeu(tJeu, nbj, game, &t); //on cherche le jeu a emprunter
     if (t == false)
     {
-        printf("user not found\n");
+        printf("Game not found\n");
         return;
     }
     if (tJeu[iJeu]->nbdisp == 0) //on regarde si le jeu est disponible
@@ -186,7 +188,7 @@ void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client
         return;
     }
     //on créé l'emprunt
-    empr.jeu = *tJeu[iJeu];
+    strcpy(empr.jeu.nom, tJeu[iJeu]->nom);
     empr.date.an = system("date +%Y");
     empr.date.mois = system("date +%m");
     empr.date.jour = system("date +%d");
