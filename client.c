@@ -137,11 +137,39 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     return inf;
 }
 
+void saveClient(Client **tClient, int ind)
+{
+    FILE *fe;
+
+    fe=fopen("client.don", "a");
+    if(fe == NULL){
+        printf("Erreur ouverture fichier\n");
+        exit(1);
+    }                          
+    
+    fprintf(fe,"%s\n%s\n%s\n%s\n%d\n", tClient[ind]->nom, tClient[ind]->prenom, tClient[ind]->adresse, tClient[ind]->ville, tClient[ind]->codeP);
+
+    fclose(fe);
+}
+
+/*void saveClientAfterDel(Client **tClient, int nb)
+{
+    FILE *fe;
+
+    fe=fopen("client.don", "a");
+    if(fe == NULL){
+        printf("Erreur ouverture fichier\n");
+        exit(1);
+    }                          
+    
+    fprintf(fe,"%s\n%s\n%s\n%s\n%d\n", tClient[ind]->nom, tClient[ind]->prenom, tClient[ind]->adresse, tClient[ind]->ville, tClient[ind]->codeP);
+
+    fclose(fe);
+}*/
 
 
 
-
-Client ** newClient(Client **tCli, int *nb) //TODO fix segfault au nveau du tab tmp
+Client ** newClient(Client **tCli, int *nb) 
 {
     int wh;
     bool t;
@@ -200,6 +228,7 @@ Client ** newClient(Client **tCli, int *nb) //TODO fix segfault au nveau du tab 
 
     *tmp[wh] = cli; //put new client in array
     tCli = tmp; //replace old array with new
+    saveClient(tCli, wh);
     return tCli;
 }
 
