@@ -17,7 +17,7 @@ typedef struct {
 
 
 void printMenu(int *choix); // Done
-void Menu (); // Done
+void Menu (Client **tCli, int nbc, Jeu **tJeu, int nbj); // Done
 
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done

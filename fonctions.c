@@ -25,67 +25,79 @@ void printMenu (int *choix)
 	scanf("%d", choix);
 }
 
-void Menu()
+void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj)
 {
 	int choix;
-
+    char tmp;
 	while(1)
-	{
-        Menu(&choix);
+	{  
+        system("clear");
+        printMenu(&choix);
         while(choix>9)
         {
-            printf("Wrong choice, it's not a posibility.. Try again.\n");
+            printf("Wrong choice, please try again.\n");
             printMenu(&choix);
         }
 
 		switch(choix)
     	{
             case 1:
-                printf("\nYou've chosen to register a new member.\n");
-                printf("\n");
-                printf("Do you want to realize another task?\n");
+                printf("\nYou chose to register a new member.\n");
+                tmp = getchar();
+                tCli = newClient(tCli, &nbc);
                 break;
             case 2:
-             	printf("\nYou've chosen to delete a member.\n");
+             	printf("\nYou chose to delete a member.\n");
+                tmp = getchar();
+                //delClient(tCli, &nbc, nom, prenom); //TODO
+
                 printf("\n");
-                printf("Do you want to realize another task?\n");
                 break;
             case 3:
-                printf("\nYou've chosen to register a loan.\n");
+                printf("\nYou chose to register a loan.\n");
                 printf("\n");
-                printf("Do you want to realize another task?\n");
                 break;   
             case 4:
-                printf("\nYou've chosen to register a new theme afternoon.\n");
+                printf("\nYou chose to register a new theme afternoon.\n");
                 printf("\n");
-                printf("Do you want to realize another task?\n");
                 break;
             case 5:
-                printf("\nYou've chosen to register member to a theme aft.\n");
+                printf("\nYou chose to register member to a theme aft.\n");
                 printf("\n");
-                printf("Do you want to realize another task?\n");
                 break;
             case 6:
-                printf("\nYou've chosen to edit the game list.\n");
+                printf("\nYou chose to edit the game list.\n");
                 printf("\n");
-                printf("Do you want to realize another task?\n");
                 break;
             case 7:
-                printf("\nYou've chosen to edit list of afternoon's members.\n");
+                printf("\nYou chose to edit the list of afternoons' members.\n");
                 printf("\n");
-                printf("Do you want to realize another task?\n");
                 break; 
             case 8:
-                printf("\nYou've chosen to edit borrowers list.\n");
+                printf("\nYou chose to edit borrowers list.\n");
                 printf("\n");
-                printf("Do you want to realize another task?\n");
                 break;
             case 9:
-                printf("\nYou've chosen to exit. \t");
+                printf("\nYou chose to exit. \t");
                 printf("Glad you came, see you soon!\n");
                 printf("\n");
-                return;  
+                return; 
+            default:
+                printf("Wrong choice, please try again.\n");
+                break; 
         }
+        
+        choix = 0;
+        printf("\nDo you want to realize another task ? (y/n)\n");
+        scanf("%c%*c", &tmp);
+        if (tmp == 'n');
+        {
+            printf("quitting\n");
+            //free(tCli);
+            free(tJeu);
+            return;
+        }
+
     }
 }
 
@@ -101,7 +113,9 @@ int subDate(Date d1, Date d2)
 Jeu readJeu(FILE *fe)
 {
     Jeu game;
-    fscanf(fe, "%s\n%d %d\n", game.nom, &(game.nbdisp), &(game.nbtot));
+    fgets(game.nom, 100, fe);
+    game.nom[strlen(game.nom)-1] = '\0';
+    fscanf(fe, "%d %d\n", &(game.nbdisp), &(game.nbtot));
     return game;
 }
 
@@ -142,11 +156,12 @@ Jeu **loadGameList (int *nb)
 
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 {
+
     int inf = 0, sup = nb-1, m, j;
     while (inf <= sup)
     {
         m = (sup+inf)/2;
-
+        printf("%s\n%s\n\n", nom, tJeu[m]->nom);
         if (strcmp(nom, tJeu[m]->nom) == 0)
         {
             *t = true;
@@ -158,6 +173,7 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
             inf = m+1;
 
     }
+    printf("not found\n");
     return inf;
 }
 

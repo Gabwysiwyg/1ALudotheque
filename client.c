@@ -152,20 +152,6 @@ void saveClient(Client **tClient, int ind)
     fclose(fe);
 }
 
-/*void saveClientAfterDel(Client **tClient, int nb)
-{
-    FILE *fe;
-
-    fe=fopen("client.don", "a");
-    if(fe == NULL){
-        printf("Erreur ouverture fichier\n");
-        exit(1);
-    }                          
-    
-    fprintf(fe,"%s\n%s\n%s\n%s\n%d\n", tClient[ind]->nom, tClient[ind]->prenom, tClient[ind]->adresse, tClient[ind]->ville, tClient[ind]->codeP);
-
-    fclose(fe);
-}*/
 
 
 
@@ -193,7 +179,7 @@ Client ** newClient(Client **tCli, int *nb)
     cli.ville[strlen(cli.ville)-1] = '\0'; //ville
 
     printf("Code postal: ");
-    scanf("%d", &(cli.codeP)); //code postal
+    scanf("%d%*c", &(cli.codeP)); //code postal
     cli.paye = false;
     cli.nbEmp = 0;
     cli.lEmpr = NULL;
@@ -225,10 +211,11 @@ Client ** newClient(Client **tCli, int *nb)
         exit(1);
     }
 
-
     *tmp[wh] = cli; //put new client in array
     tCli = tmp; //replace old array with new
-    saveClient(tCli, wh);
+
+    //saveClient(tCli, wh);
+
     return tCli;
 }
 
