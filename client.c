@@ -32,9 +32,8 @@ Client readClient(FILE *file)
 
 Client ** loadClient(int *nbmax)
 {
-    int i, wh;
-    bool t;
-    Client cli, **tCli;
+    int i;
+    Client **tCli;
     FILE *fe;
     fe = fopen("client.don", "r");
     if (fe == NULL)
@@ -43,7 +42,7 @@ Client ** loadClient(int *nbmax)
         exit(1);
     }
 
-    fscanf(fe, "%d%*c", nbmax); //get nb of client in file
+    fscanf(fe, "%d\n", nbmax); //get nb of client in file
 
     tCli = (Client **)malloc(*nbmax * sizeof(Client *)); //alloc memory for array
     if (tCli == NULL)
@@ -52,6 +51,7 @@ Client ** loadClient(int *nbmax)
         exit(1);
     }
 
+    printf("%d\n", *nbmax);
     for (i=0; i < *nbmax; i++)
     {   
 
@@ -137,18 +137,19 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     return inf;
 }
 
-void saveClient(Client **tClient, int ind)
+void saveClient(Client **tClient, int nb)
 {
     FILE *fe;
-
-    fe=fopen("client.don", "a");
+    int i;
+    fe=fopen("client.don", "w");
     if(fe == NULL){
         printf("Erreur ouverture fichier\n");
         exit(1);
-    }                          
-    
-    fprintf(fe,"%s\n%s\n%s\n%s\n%d\n", tClient[ind]->nom, tClient[ind]->prenom, tClient[ind]->adresse, tClient[ind]->ville, tClient[ind]->codeP);
-
+    }                         
+    for(i=0; i < nb; i++)
+    {
+        fprintf(fe,"%s\n%s\n%s\n%s\n%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP);
+    }
     fclose(fe);
 }
 
@@ -163,7 +164,7 @@ Client ** newClient(Client **tCli, int *nb)
     char rep;
     Client **tmp;
     printf("Nom: ");
-    fgets(cli.nom, 30, stdin);
+    fgets(cli.nom, 20, stdin);
     cli.nom[strlen(cli.nom)-1] = '\0'; //nom
 
     printf("Prenom: ");
@@ -228,7 +229,8 @@ void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
     if (ans == 'o')
     {
         printf("Nouveau nom: \n");
-        scanf("%s", cli->nom);
+        fgets(cli->nom, 20, stdin);
+        cli->nom[strlen(cli->nom)-1] = '\0'; //nom
     }
 
     printf("Update prenom ? (o/n)\n");
@@ -236,7 +238,8 @@ void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
     if (ans == 'o')
     {
         printf("Nouveau prenom: \n");
-        scanf("%s", cli->prenom);
+        fgets(cli->prenom, 20, stdin);
+        cli->prenom[strlen(cli->prenom)-1] = '\0'; //nom
     }
 
     printf("Update adresse ? (o/n)\n");
@@ -244,7 +247,8 @@ void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
     if (ans == 'o')
     {
         printf("Nouvelle adresse: \n");
-        scanf("%s", cli->adresse);
+        fgets(cli->adresse, 50, stdin);
+        cli->adresse[strlen(cli->adresse)-1] = '\0'; //nom
     }
 
     printf("Update code postal ? (o/n)\n");
@@ -273,15 +277,25 @@ void leftShift(Client **tCli, int nb, int n)
         tCli[i] = tCli[i+1];
 }
 
-void delClient(Client **tCli, int *nb, char *nom, char *prenom)
+void delClient(Client **tCli, int *nb)
 {
     bool t;
     int wh;
-    Client **tmp;
-    wh = findCli(tCli, *nb, nom, prenom, &t);
+    Client **tmp, cli;
+
+    printf("Nom: ");
+    fgets(cli.nom, 30, stdin);
+    cli.nom[strlen(cli.nom)-1] = '\0'; //nom
+
+    printf("Prenom: ");
+    fgets(cli.prenom, 20, stdin);
+    cli.prenom[strlen(cli.prenom)-1] = '\0'; //prenom
+
+
+    wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t);
     if (t == false)
     {
-        printf("user not found\n");
+        printf("User not found\n");
         return;
     }
 
@@ -301,8 +315,8 @@ void delClient(Client **tCli, int *nb, char *nom, char *prenom)
 
 lEmprunt insEmpr(Client cli, Emprunt emprunt)
 {
-    Maillon *m;
-    m = (Maillon *)malloc(sizeof(Emprunt));
+    MaillonE *m;
+    m = (MaillonE *)malloc(sizeof(Emprunt));
     if (m == NULL)
     {
         printf("error malloc maillon emprunt\n");
@@ -323,4 +337,53 @@ int nbEmpr(Client cli)
         nb++;
     }
     return nb;
+}
+
+
+
+void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
+{
+    FILE *fe;
+    Emprunt empr;
+    date d;
+    char *game;
+    int whC, whJ;
+    bool t;
+    fe=fopen("emprunts.don", "r");
+    if (fe ==NULL)
+    {
+        printf("Issue during file oppening\n");
+        exit(1);
+    }
+
+
+    fgets(nom, 20, fe);
+    nom[strlen(nom)-1] = '\0';
+    fgets(prenom, 20, fe);
+    prenom[strlen(prenom)-1] = '\0';
+    fscanf(fe, "%d/%d/%d", &(d.jour), &(d.mois), &(d.an));
+    fgets(game, 100, fe);
+
+    while (!feof(fe))
+    {
+        whC = findClient(tCli, nb, nom, prenom, &t);
+        if (t == false)
+        {
+            printf("user not found\n");
+            return;
+        }
+        whJ = findClient(tJeu, nbj, game, &t);
+        if (t == false)
+        {
+            printf("game not found\n");
+            return;
+        }
+
+        empr.jeu = tJeu[whJ];
+        empr.date = d;
+        empr.retard = false;
+        tCli[whC].lEmpr = insEmpr(tCli[whC], empr);
+    }
+
+
 }

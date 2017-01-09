@@ -22,10 +22,10 @@ typedef struct {
 	bool retard; //1 si en retard
 } Emprunt;
 
-typedef struct maillon {
+typedef struct maillonE {
 	Emprunt empr;
-	struct maillon *nxt;
-} Maillon, *lEmprunt;
+	struct maillonE *nxt;
+} MaillonE, *lEmprunt;
 
 typedef struct {
 	char nom[20];
@@ -43,14 +43,15 @@ Client ** loadClient(int *nbmax); //load tCli from file, and sort them while ins
 void rightShift(Client **tCli, int nbmax, int n); //Done
 
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done
+void saveClient(Client **tClient, int nb);
 
-void saveClient(Client **tClient, int ind); //Saved in the file //Done
-void saveClientAfterDel(Client **tClient, int nb); //Saved after deleted then update //Done
 
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t); //DICHOTOMIQUE //Done
 Client ** newClient(Client **tCli, int *nb); // Done
 void updateCli(Client *cli); // Done
 void leftShift(Client **tCli, int nb, int n); //Done
-void delClient(Client **tCli, int *nb, char *nom, char *prenom); //Done
+void delClient(Client **tCli, int *nb); //Done
 lEmprunt insEmpr(Client cli, Emprunt empr); //Done
 int nbEmpr(Client cli); //Done
+void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj)
+

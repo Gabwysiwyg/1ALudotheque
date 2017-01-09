@@ -49,7 +49,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj)
             case 2:
              	printf("\nYou chose to delete a member.\n");
                 tmp = getchar();
-                //delClient(tCli, &nbc, nom, prenom); //TODO
+                delClient(tCli, &nbc);
 
                 printf("\n");
                 break;
@@ -157,7 +157,7 @@ Jeu **loadGameList (int *nb)
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 {
 
-    int inf = 0, sup = nb-1, m, j;
+    int inf = 0, sup = nb-1, m;
     while (inf <= sup)
     {
         m = (sup+inf)/2;
@@ -177,7 +177,6 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
     return inf;
 }
 
-//void saveEmp(Client **tClient)
 
 void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc) 
 {
@@ -222,22 +221,113 @@ void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client
 
 }
 
-/*Afternoon * newAfternoon(Jeu jeu, Date date, Jeu tJeu[]) //TODO Faire la fonction avec tab pointeurs
+void saveEmprunt(Client **tCli, int nb)
+{
+    int i;
+    FILE *fe;
+
+    fe=fopen("emprunts.don", "w");
+    if(fe == NULL){
+        printf("Erreur ouverture fichier\n");
+        exit(1);
+    }                          
+    
+    for (i = 0; i < nb; i++)
+    {
+        if (tCli[i]->lEmpr != NULL)
+        {
+            while (tCli[i]->lEmpr != NULL)
+            {
+                fprintf(fe, "%s\n%s\n%d/%d/%d\n%s\n", 
+                        tCli[i]->nom, tCli[i]->prenom, 
+                        tCli[i]->lEmpr->empr.date.jour, tCli[i]->lEmpr->empr.date.mois, tCli[i]->lEmpr->empr.date.an,
+                        tCli[i]->lEmpr->empr.jeu.nom);
+                tCli[i]->lEmpr = tCli[i]->lEmpr->nxt;
+            }
+        }
+    }
+
+    fclose(fe);
+}
+
+
+Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)
+{
+    Afternoon *tAft;
+    FILE *fe;
+    int i, j, nbCli, wh;
+    char *nom, *prenom;
+    bool t;
+
+
+    fe=fopen("afternoon.don", "r");
+    if (fe ==NULL){
+        printf("Issue during file oppening\n");
+        exit(1);
+    }
+
+
+    fscanf(fe, "%d\n", nb); //Get number of afternoons
+    tAft = (Afternoon *)malloc(*nb * sizeof(Afternoon));
+    if (tAft == NULL)
+    {
+        printf("problem tAft malloc\n");
+        exit(1);
+    }
+
+    for (i=0; i < *nb; i++)
+    {
+        fgets(tAft[i].jeu.nom, 100, fe);
+        tAft[i].jeu.nom[strlen(tAft[i].jeu.nom)-1] = '\0';
+
+        fscanf(fe, "%d/%d/%d\n", &(tAft[i].date.jour), &(tAft[i].date.mois), &(tAft[i].date.an));
+        fscanf(fe, "%d %d\n", &(tAft[i].nbPtot), &nbCli); //get nbPtot & nbCli
+        tAft[i].nbPdisp = tAft[i].nbPtot - nbCli;
+
+        for (j=0; j < nbCli; j++)
+        {
+            fgets(nom, 20, fe);
+            nom[strlen(nom)-1] = '\0';
+            fgets(prenom, 20, fe);
+            prenom[strlen(prenom)-1] = '\0';
+
+
+            wh = findCli(tCli, nbc, nom, prenom, &t);
+
+            insCliAft(*tCli[wh], tAft[i]);
+
+        }
+    }
+
+
+    fclose(fe);
+    return tAft;
+}
+
+
+
+
+
+
+Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO Faire la fonction avec tab pointeurs
 {
 
-    afternoon aft;
-    afternoon af[];
-    int k;
+    Afternoon aft, *tAft;
 
+    bool t = false;
 
-    printf("Choose your game's name: \n");
-    fgets(aft.jeu.nom, 40, stdin);
-    aft.jeu.nom[strlen(aft.jeu.nom)-1]='\0';
-
-    for(k=0; k<= strlen(tJeu); k++)
-    if (strcmp(aft.jeu.nom, tJeu[i]->nom) == 0){
-        aft.jeu.nbtot=tJeu->nbtot;
-        aft.jeu.nbdisp=tJeu->nbdisp;
+    while (t == false)
+    {
+        printf("Enter the game's name: \n");
+        fgets(aft.jeu.nom, 40, stdin);
+        aft.jeu.nom[strlen(aft.jeu.nom)-1]='\0';
+    
+        findJeu(tJeu, nb, aft.jeu.nom, &t);
+        if (t == true)
+            break;
+        printf("Game not found.\n");
+     
+    }
 
     printf("Choose the day :\n");
     scanf("%d", &(aft.date.jour));
@@ -246,21 +336,121 @@ void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client
     printf("Choose the year :\n");
     scanf("%d", &(aft.date.an));
 
-    printf("Choose how many people could join this afternoon :\n");
+    printf("Choose how many people can join this afternoon :\n");
     scanf("%d", &(aft.nbPtot));
     aft.nbPdisp=aft.nbPtot;
 
-    af=aft;
-}*/
+    tAft =(Afternoon *)realloc(otAft, (*nba+1)*sizeof(Afternoon));
+    if (tAft == NULL)
+    {
+        printf("problem tAFt malloc\n");
+        exit(1);
+    }
+
+    tAft[*nba] = aft;
+    (*nba)++;
+    return tAft;
+}
 
 
 
+void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
+{
+    char *jeu, *nom, *prenom;
+    bool t = false;
+    int wh, i;
+
+    while (t == false)
+    {
+        printf("Nom du jeu: ");
+        fgets(jeu, 30, stdin);
+        jeu[strlen(jeu)-1] = '\0'; //nom
+        for (i = 0; i < nba; i++)
+            if (strcmp(jeu, tAft[i].jeu.nom) == 0)
+            { 
+                t = true;
+                break;
+            }
+    }
+
+    t = false;
+    while (t == false)
+    {
+        printf("Nom: ");
+        fgets(nom, 30, stdin);
+        nom[strlen(nom)-1] = '\0'; //nom
+
+        printf("Prenom: ");
+        fgets(prenom, 20, stdin);
+        prenom[strlen(prenom)-1] = '\0'; //prenom
+
+        wh = findCli(tCli, nbc, nom, prenom, &t); 
+        if (t == true)
+            break;
+
+        printf("User not found, retry\n");
+    }
+
+    if (tAft[i].nbPdisp == 0)
+    {
+        printf("Booking is full\n");
+        return;
+    }
+
+    tAft[i].lCli = insCliAft(*tCli[wh], tAft[i]);
+    tAft[i].nbPdisp -= 1;
+}
+
+
+liCli insCliAft(Client cli, Afternoon aft)
+{
+    MaillonC *m;
+    m = (MaillonC *)malloc(sizeof(Client));
+
+    if (m == NULL)
+    {
+        printf("error malloc maillon emprunt\n");
+        exit(1);
+    }
+
+    m->cli = cli;
+    m->nxt = aft.lCli;
+    return m;
+}
 
 
 
+void saveAft(Afternoon tAft[], int nb)
+{
+    int i;
+    FILE *fe;
 
+    fe=fopen("afternoon.don", "w");
+    if(fe == NULL){
+        printf("Erreur ouverture fichier\n");
+        exit(1);
+    }                          
+    
+    fprintf(fe, "%d\n", nb);
 
+    for (i = 0; i < nb; i++)
+    {
+        fprintf(fe, "%s\n%d/%d/%d\n%d%d", tAft[i].jeu.nom, //header for the afternoon
+                tAft[i].date.jour, tAft[i].date.mois, tAft[i].date.an,
+                tAft[i].nbPtot, tAft[i].nbPdisp);
 
+        if (tAft[i].lCli != NULL)
+        {
+            while (tAft[i].lCli != NULL)
+            {
+                fprintf(fe, "%s\n%s\n", tAft[i].lCli->cli.nom, tAft[i].lCli->cli.prenom);
+                tAft[i].lCli = tAft[i].lCli->nxt;
+            }
+        }
+    }
+
+    fclose(fe);
+}
 
 
 
