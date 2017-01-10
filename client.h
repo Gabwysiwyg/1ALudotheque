@@ -35,7 +35,8 @@ typedef struct {
 	int codeP;
 	lEmprunt lEmpr;
 	bool paye; //1 si il a payé
-	int nbEmp;
+	Date dIns;
+	bool retard;
 } Client;
 
 Client readClient(FILE *file); //read client info in file // Done
@@ -54,4 +55,8 @@ void delClient(Client **tCli, int *nb); //Done
 lEmprunt insEmpr(Client cli, Emprunt empr); //Done
 int nbEmpr(Client cli); //Done
 void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj)
+
+lEmprunt supEmprtete(lEmprunt l);
+lEmprunt supEmpr(Lemprunt l, char *nom);
+void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj);
 

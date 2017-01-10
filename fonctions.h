@@ -36,3 +36,4 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc);
 liCli insCliAft(Client cli, Afternoon aft);
 
 int subDate(Date d1, Date d2); // Done
+void checkTime(Client **tCli, int nb);

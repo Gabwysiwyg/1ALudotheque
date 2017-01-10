@@ -22,9 +22,10 @@ Client readClient(FILE *file)
     cli.ville[strlen(cli.ville)-1] = '\0'; //ville
 
 	fscanf(file, "%d%*c", &(cli.codeP)); //code postal
+    fscanf(file, "%d/%d/%d", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an)); //code postal
 
-	cli.paye = 0;
-	cli.nbEmp = 0;
+	cli.paye = true;
+    cli.retard = false;
     cli.lEmpr = NULL;
 	return cli;
 }
@@ -182,7 +183,7 @@ Client ** newClient(Client **tCli, int *nb)
     printf("Code postal: ");
     scanf("%d%*c", &(cli.codeP)); //code postal
     cli.paye = false;
-    cli.nbEmp = 0;
+
     cli.lEmpr = NULL;
 
     wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t); //find where to insert
@@ -292,7 +293,7 @@ void delClient(Client **tCli, int *nb)
     cli.prenom[strlen(cli.prenom)-1] = '\0'; //prenom
 
 
-    wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t);
+    wh = findCli(tCli, nb, cli.nom, cli.prenom, &t);
     if (t == false)
     {
         printf("User not found\n");
@@ -362,7 +363,9 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
     fgets(prenom, 20, fe);
     prenom[strlen(prenom)-1] = '\0';
     fscanf(fe, "%d/%d/%d", &(d.jour), &(d.mois), &(d.an));
+    
     fgets(game, 100, fe);
+    game[strlen(game)-1] = '\0';
 
     while (!feof(fe))
     {
@@ -372,7 +375,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
             printf("user not found\n");
             return;
         }
-        whJ = findClient(tJeu, nbj, game, &t);
+        whJ = findJeu(tJeu, nbj, game, &t);
         if (t == false)
         {
             printf("game not found\n");
@@ -384,6 +387,67 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
         empr.retard = false;
         tCli[whC].lEmpr = insEmpr(tCli[whC], empr);
     }
-
-
 }
+
+lEmprunt supEmprtete(lEmprunt l)
+{
+    MaillonE *tmp;
+    tmp = l->nxt;
+    free(l);
+    return tmp;
+}
+
+
+lEmprunt supEmpr(Lemprunt l, char *nom, bool *t)
+{
+    if (l == NULL)
+        return l;
+    if (strcmp(nom, l->jeu.nom) == 0)
+        {
+            *t = true;
+            return supEmprtete(l);
+        }
+    return supEmpr(l->nxt, nom);
+}
+
+void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
+{
+    char *nom, *prenom, *game;
+    int whJ, whC;
+    bool t;
+    lEmprunt tmp;
+
+    printf("Nom: ");
+    fgets(nom, 30, stdin);
+    nom[strlen(nom)-1] = '\0'; //nom
+
+    printf("Prenom: ");
+    fgets(prenom, 20, stdin);
+    prenom[strlen(prenom)-1] = '\0'; //prenom
+
+    t = false;
+    whC = findCli(tCli, nbc, nom, prenom, &t);
+    if (t == false)
+    {
+        printf("User not found\n");
+        return;
+    }
+
+    t = false;
+    fgets(game, 100, fe);
+    game[strlen(game)-1] = '\0';
+    whJ = findJeu(tJeu, nbj, game, &t);
+    if (t == false)
+    {
+        printf("Game not found\n");
+        return;
+    }
+
+    t = false;
+    tCli[whC]->lEmpr = supEmpr(tCli[whC]->lEmpr, game, &t);
+    if (t == true)
+        return;
+    
+    printf("You didn't rent this game\n");
+}
+

@@ -106,7 +106,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj)
 
 int subDate(Date d1, Date d2)
 {
-    return 365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour;
+    return abs(365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour);
 }
 
 
@@ -191,6 +191,10 @@ void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client
         return;
     }
 
+    if (tCli[iCli]->paye == false)
+    {
+        printf("Your subscription has expired\n");
+    }
     iJeu = findJeu(tJeu, nbj, game, &t); //on cherche le jeu a emprunter
     if (t == false)
     {
@@ -453,8 +457,34 @@ void saveAft(Afternoon tAft[], int nb)
 }
 
 
+void checkTime(Client **tCli, int nb)
+{
+    lEmprunt tmp;
+    int i;
 
+    Date d = {system("date +%d"), system("date +%m"), system("date +%Y")};
 
+    for (i=0; i < nb; i++) //for each client
+    {
+        if (tCLi[i]->lEmpr != NULL) //if he has emprunts
+        {
+            tmp = tCLi[i]->lEmpr;
+            while (tmp != NULL) //for each emprunt
+            {
+                if (subDate(d, tmp->empr.date) > 21) //if late
+                {
+                    tmp->empr.retard = true;
+                    tCli[i]->retard = true;
+                }
+                tmp = tmp->nxt; //next emprunt
+            }
+        }
+
+        if (subDate(d, tCli[i]->dIns) > 365) //if client outdated
+            tCli[i]->paye = false; //he needs to pay again
+    }
+
+}
 
 
 
