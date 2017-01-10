@@ -15,11 +15,11 @@ int main (void)
 
     tJeu = loadGameList (&nbj);
 
-    //tAft = loadAfternoon(&nba, tCli, nbc);
+    tAft = loadAfternoon(&nba, tCli, nbc);
+
 
     //Menu(tCli, nbc, tJeu, nbj);
 
-    printf("%s\n", tCli[0]->nom);
 
     //printf("%s\n", tAft[0].jeu.nom);
 

@@ -1,4 +1,4 @@
-	#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -46,17 +46,23 @@ void rightShift(Client **tCli, int nbmax, int n); //Done
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done
 void saveClient(Client **tClient, int nb);
 
-
+ImputNewCliAndRetry (Client cli, int *nb);
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t); //DICHOTOMIQUE //Done
+int findJeu(Jeu **tJeu, int nb, char *nom, bool *t);
 Client ** newClient(Client **tCli, int *nb); // Done
+
 void updateCli(Client *cli); // Done
+void newSouscription(Client **tCli, int nb, int ind); //Done
+void UpdateGlobale (Client **tCLi, int nb); //Done
+void mailToClient(Client **tCli, int nb);
+
 void leftShift(Client **tCli, int nb, int n); //Done
 void delClient(Client **tCli, int *nb); //Done
 lEmprunt insEmpr(Client cli, Emprunt empr); //Done
 int nbEmpr(Client cli); //Done
-void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj)
+void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj);
 
 lEmprunt supEmprtete(lEmprunt l);
-lEmprunt supEmpr(Lemprunt l, char *nom);
+lEmprunt supEmpr(lEmprunt l, char *nom, bool *t);
 void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj);
 

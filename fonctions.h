@@ -25,7 +25,6 @@ void Menu (Client **tCli, int nbc, Jeu **tJeu, int nbj); // Done
 
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
-int findJeu(Jeu **tJeu, int nb, char *nom, bool *t);
 
 void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc); //Done
 void saveEmprunt(Client **tCli, int nb); //Done

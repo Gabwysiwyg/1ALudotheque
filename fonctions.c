@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <printf.h>
 #include "fonctions.h"
 
 
@@ -90,7 +91,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj)
         choix = 0;
         printf("\nDo you want to realize another task ? (y/n)\n");
         scanf("%c%*c", &tmp);
-        if (tmp == 'n');
+        if (tmp == 'n')
         {
             printf("quitting\n");
             //free(tCli);
@@ -157,11 +158,16 @@ Jeu **loadGameList (int *nb)
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 {
 
-    int inf = 0, sup = nb-1, m;
+    int inf = 0, sup = nb-1, m, i;
+    for(i=0; i<20; i++){
+            nom[i]=tolower(nom[i]);
     while (inf <= sup)
     {
         m = (sup+inf)/2;
-        printf("%s\n%s\n\n", nom, tJeu[m]->nom);
+
+        for(i=0; i<20; i++)
+            tJeu[m]->nom[i]=tolower(tJeu[m]->nom[i]);
+
         if (strcmp(nom, tJeu[m]->nom) == 0)
         {
             *t = true;
@@ -260,7 +266,7 @@ Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)
     Afternoon *tAft;
     FILE *fe;
     int i, j, nbCli, wh;
-    char *nom, *prenom;
+    char nom[20], prenom[20];
     bool t;
 
 
@@ -295,15 +301,11 @@ Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)
             fgets(prenom, 20, fe);
             prenom[strlen(prenom)-1] = '\0';
 
-
             wh = findCli(tCli, nbc, nom, prenom, &t);
 
-            insCliAft(*tCli[wh], tAft[i]);
-
+            tAft[i].lCli=insCliAft(*tCli[wh], tAft[i]);
         }
-    }
-
-
+            }
     fclose(fe);
     return tAft;
 }
@@ -409,6 +411,7 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
 liCli insCliAft(Client cli, Afternoon aft)
 {
     MaillonC *m;
+
     m = (MaillonC *)malloc(sizeof(Client));
 
     if (m == NULL)
@@ -466,9 +469,9 @@ void checkTime(Client **tCli, int nb)
 
     for (i=0; i < nb; i++) //for each client
     {
-        if (tCLi[i]->lEmpr != NULL) //if he has emprunts
+        if (tCli[i]->lEmpr != NULL) //if he has emprunts
         {
-            tmp = tCLi[i]->lEmpr;
+            tmp = tCli[i]->lEmpr;
             while (tmp != NULL) //for each emprunt
             {
                 if (subDate(d, tmp->empr.date) > 21) //if late
