@@ -23,7 +23,6 @@ Client readClient(FILE *file)
     cli.ville[strlen(cli.ville)-1] = '\0'; //ville
 
 	fscanf(file, "%d%*c", &(cli.codeP)); //code postal
-    fscanf(file, "%d/%d/%d", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an)); //code postal
     fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
 
 	cli.paye = true;
@@ -54,7 +53,6 @@ Client ** loadClient(int *nbmax)
         exit(1);
     }
 
-    printf("%d\n", *nbmax);
     for (i=0; i < *nbmax; i++)
     {   
 
@@ -69,6 +67,7 @@ Client ** loadClient(int *nbmax)
     }
 
     fclose(fe);
+
     return tCli; //return nb of client
 }
 
@@ -84,12 +83,12 @@ void rightShift(Client **tCli, int nbmax, int n)
 int cmpNomPrenom(Client c1, Client c2)
 {
     int j;
-    for (j = 0 ; j<20 ; j++){
+    /*for (j = 0 ; j<21 ; j++){
         c1.nom[j]=tolower(c1.nom[j]);
         c2.nom[j]=tolower(c2.nom[j]);
         c1.prenom[j]=tolower(c1.prenom[j]);
         c2.prenom[j]=tolower(c2.prenom[j]);
-    }
+    }*/
     if (strcmp(c1.nom, c2.nom) > 0)
         return 1;
     else if(strcmp(c1.nom, c2.nom) < 0)
@@ -120,7 +119,6 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     while (inf <= sup)
     {
         m = (sup+inf)/2;
-
         if (cmpNomPrenom(cli, *tCli[m]) == 0)
         {
             *t = true;
@@ -144,7 +142,8 @@ void saveClient(Client **tClient, int nb)
     if(fe == NULL){
         printf("Erreur ouverture fichier\n");
         exit(1);
-    }                         
+    }
+    fprintf(fe, "%d\n", nb);                         
     for(i=0; i < nb; i++)
     {
         fprintf(fe,"%s\n%s\n%s\n%s\n%d\n%d/%d/%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP, tClient[i]->dIns.jour, tClient[i]->dIns.mois, tClient[i]->dIns.an);
@@ -163,23 +162,23 @@ Client ** newClient(Client **tCli, int *nb)
     char rep;
     Client **tmp;
 
-    ImputNewCliAndRetry(cli, *nb);
+    //InputNewCliAndRetry(cli, *nb);
 
-    wh = findCli(tCli, *nb, nom, prenom, &t);
+    wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t);
 
-    if (t == true){
+    if (t == true)
+    {
         printf("User found, update data ? (o/n)\n");
-        scanf("%c%*c", rep);
-        while (rep != 'o'|| rep != 'O'|| rep != 'n'|| rep != 'N'){
+        scanf("%c%*c", &rep);
+        while (rep != 'o'|| rep != 'O'|| rep != 'n'|| rep != 'N')
+        {
             printf("Mauvaise saisie, update data ? (o/n)\n");
-            scanf("%c%*c", rep);
+            scanf("%c%*c", &rep);
         }
         if (rep == 'y' || rep == 'Y')
-            updateCli(tCli);
-            return tCli;
-        }
-        else
-            return tCli;
+            updateCli(tCli[wh]);
+
+        return tCli;
     }
 
     (*nb)++;
@@ -266,19 +265,11 @@ void delClient(Client **tCli, int *nb)
     int wh;
     Client **tmp, cli;
 
-    printf("Nom: ");
-    fgets(cli.nom, 30, stdin);
-    cli.nom[strlen(cli.nom)-1] = '\0'; //nom
 
-    printf("Prenom: ");
-    fgets(cli.prenom, 20, stdin);
-    cli.prenom[strlen(cli.prenom)-1] = '\0'; //prenom
-
-
-    wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t);
-    if (t == false)
+    wh = inputFindCli(tCli, *nb);
+    if (wh == -1)
     {
-        printf("User not found\n");
+        printf("Opération annulée");
         return;
     }
 
@@ -299,7 +290,7 @@ void delClient(Client **tCli, int *nb)
 lEmprunt insEmpr(Client cli, Emprunt emprunt)
 {
     MaillonE *m;
-    m = (MaillonE *)malloc(sizeof(Emprunt));
+    m = (MaillonE *)malloc(sizeof(MaillonE));
     if (m == NULL)
     {
         printf("error malloc maillon emprunt\n");
@@ -324,7 +315,7 @@ int nbEmpr(Client cli)
 
 
 
-void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
+void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not found maybe
 {
     FILE *fe;
     Emprunt empr;
@@ -332,7 +323,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
     char nom[20], prenom[20];
     char game[100];
     int whJ, whC;
-    bool t;
+    bool t, ret;
     fe=fopen("emprunts.don", "r");
     if (fe ==NULL)
     {
@@ -341,18 +332,23 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
     }
 
 
+
     fgets(nom, 20, fe);
     nom[strlen(nom)-1] = '\0';
     fgets(prenom, 20, fe);
     prenom[strlen(prenom)-1] = '\0';
-    fscanf(fe, "%d/%d/%d", &(d.jour), &(d.mois), &(d.an));
+    fscanf(fe, "%d/%d/%d\n", &(d.jour), &(d.mois), &(d.an));
     
     fgets(game, 100, fe);
     game[strlen(game)-1] = '\0';
 
+    fscanf(fe, "%d\n", &ret);
+    printf("load\n");
     while (!feof(fe))
-    {
+    {   
+
         whC = findCli(tCli, nb, nom, prenom, &t);
+
         if (t == false)
         {
             printf("user not found\n");
@@ -370,9 +366,21 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO test
         empr.jeu.nbdisp = tJeu[whJ]->nbdisp;
         empr.jeu.nbtot= tJeu[whJ]->nbtot;
         empr.date = d;
-        empr.retard = false;
+        empr.retard = ret;
         tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr);
+
+        fgets(nom, 20, fe);
+        nom[strlen(nom)-1] = '\0';
+        fgets(prenom, 20, fe);
+        prenom[strlen(prenom)-1] = '\0';
+        fscanf(fe, "%d/%d/%d", &(d.jour), &(d.mois), &(d.an));
+        
+        fgets(game, 100, fe);
+        game[strlen(game)-1] = '\0';
+
+        fscanf(fe, "%d\n", &ret);
     }
+    printf("done\n");
 }
 
 lEmprunt supEmprtete(lEmprunt l)
@@ -403,29 +411,11 @@ void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
     bool t;
     lEmprunt tmp;
 
-    printf("Nom: ");
-    fgets(nom, 30, stdin);
-    nom[strlen(nom)-1] = '\0'; //nom
-
-    printf("Prenom: ");
-    fgets(prenom, 20, stdin);
-    prenom[strlen(prenom)-1] = '\0'; //prenom
-
-    t = false;
-    whC = findCli(tCli, nbc, nom, prenom, &t);
-    if (t == false)
+    whC = inputFindCli(tCli, nbc);
+    whJ = inputFindJeu(tJeu, nbj);
+    if (whC == -1 || whJ == -1)
     {
-        printf("User not found\n");
-        return;
-    }
-
-    t = false;
-    fgets(game, 100, stdin);
-    game[strlen(game)-1] = '\0';
-    whJ = findJeu(tJeu, nbj, game, &t);
-    if (t == false)
-    {
-        printf("Game not found\n");
+        printf("Opération annulée");
         return;
     }
 
@@ -444,7 +434,7 @@ void newSouscription(Client **tCli, int nb, int ind)
         tCli[ind]->paye=1;
 }
 
-void UpdateGlobale (Client **tCLi, int nb)
+void UpdateGlobale (Client **tCli, int nb)
 {
     char nom[20], prenom[20], rep;
     int ind;
@@ -463,9 +453,10 @@ void UpdateGlobale (Client **tCLi, int nb)
         scanf("%c%*c", rep);
     }
 
-    if (rep == 'O'||rep == 'o'){
+    if (rep == 'O'||rep == 'o')
+    {
         newSouscription(tCli, nb, ind);
-        printf("Done! Merci de votre fidélité!\n", );
+        printf("Done! Merci de votre fidélité!\n");
     }
     
     printf("Voulez vous modifier vos données personelles ? (o/n)\n");
@@ -479,7 +470,8 @@ void UpdateGlobale (Client **tCLi, int nb)
         updateCli(tCli[ind]);
 }
 
-int ImputNewCliAndRetry (Client cli, int nb){
+/*Client InputNewCliAndRetry (Client cli, int nb)
+{
     regex_t expr;
     int error, ind;
     bool good = false, t;
@@ -490,12 +482,14 @@ int ImputNewCliAndRetry (Client cli, int nb){
 
     printf("Nom : \n");
     fgets(cli.nom, 20, stdin);
-    while (good == false){
+    while (good == false)
+    {
         error = regcomp (&expr, str_regex, REG_NOSUB | REG_EXTENDED); //Check (compile) si l'exp reg est valide.
         if (error == 0) // Si valide on crée variable pour analyser notre chaîne.
             int check;
         check = regexec(&expr, cli.nom, 0, NULL, 0); //Analyse.
-        if (check == NO_NOMATCH){ //Critères ne correspondent pas.
+        if (check == NO_NOMATCH) //Critères ne correspondent pas.
+        { 
             printf("Mauvaise saisie, ceci n'est pas une chaîne de caractère, veuillez réessayer.\n");
             printf("Nom : \n");
             fgets(cli.nom, 20, stdin);
@@ -509,7 +503,8 @@ int ImputNewCliAndRetry (Client cli, int nb){
     good = false;
     printf("Prenom : \n");
     fgets(cli.prenom, 20, stdin);
-    while (good == false){
+    while (good == false)
+    {
         error = regcomp (&expr, str_regex, REG_NOSUB | REG_EXTENDED); //Check (compile) si l'exp reg est valide.
         if (error == 0) // Si valide on crée variable pour analyser notre chaîne.
             int check;
@@ -529,17 +524,20 @@ int ImputNewCliAndRetry (Client cli, int nb){
 
     printf("Adresse: ");
     fgets(cli.adresse, 50, stdin);
-    while (good == false){
+    while (good == false)
+    {
         error = regcomp (&expr, str_regex2, REG_NOSUB | REG_EXTENDED); //Check (compile) si l'exp reg est valide.
         if (error == 0) // Si valide on crée variable pour analyser notre chaîne.
             int check;
         check = regexec(&expr, prenom, 0, NULL, 0); //Analyse.
-        if (check == NO_NOMATCH){ //Critères ne correspondent pas.
+        if (check == NO_NOMATCH)
+        { //Critères ne correspondent pas.
             printf("Mauvaise saisie, certains caractères ne sont pas cohérents, veuillez réessayer.\n");
             printf("Adresse : \n");
             fgets(cli.adresse, 50, stdin);
         }
-        else{
+        else
+        {
             regfree(&expr); //libération de la mémoire.
             good = true;
         }
@@ -570,7 +568,9 @@ int ImputNewCliAndRetry (Client cli, int nb){
     printf("Code postal: ");
     scanf("%d%*c", &(cli.codeP)); //code postal
     while (good = false)
-        if (cli.codeP < 0 || cli.codeP > 97999){
+    {
+        if (cli.codeP < 0 || cli.codeP > 97999)
+        {
             printf("Code postal inexistant, veuillez réessayer\n");
             printf("Code postal: ");
             scanf("%d%*c", &(cli.codeP));
@@ -582,7 +582,7 @@ int ImputNewCliAndRetry (Client cli, int nb){
     cli.lEmpr = NULL;
     cli.dIns = {system("date +%d"), system("date +%m"), system("date +%Y")};
     return cli;
-}
+}*/
 
 
 /*void mailToClient(Client **tCli, int nb) //TODO add email au client
@@ -591,30 +591,63 @@ int ImputNewCliAndRetry (Client cli, int nb){
 
     for (i=0; i<nb; i++){
         if (tCli[i]->paye == false)
-            system("mailx -s "Suscribe" "FROM: Gabin.salabert@laposte.net" tCli[i]->email < echo "Votre inscription a expiré, vous devez payer à nouveau. Cordialement."")
+            system("mailx -s \'Suscribe\' \'FROM: Gabin.salabert@laposte.net\'" + tCli[i]->email  + " < echo \'Votre inscription a expiré, vous devez payer à nouveau. Cordialement.\'");
     } 
 }*/
 
 
+int inputFindCli(Client **tCli, int nb)
+{
+    char nom[20], prenom[20];
+    bool t = false;
+    int wh = 0;
+    char c;
 
+    while (t == false)
+    {
+        printf("Nom: \n");
+        fgets(nom, 20, stdin);
+        nom[strlen(nom)-1] = '\0';
 
+        printf("Prenom: \n");
+        fgets(prenom, 20, stdin);
+        prenom[strlen(prenom)-1] = '\0';
+        wh = findCli(tCli, nb, nom, prenom, &t);
 
+        if (t == true)
+            return wh;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        printf("Client non-trouvé, voulez-vous réessayer ? (o/n)\n");
+        scanf("%*c%c", &c);
+        if (c == 'n')
+            return -1;
+    }
+    return wh;
 
 }
 
+int inputFindJeu(Jeu **tJeu, int nb)
+{
+    char nom[100];
+    bool t = false;
+    int wh = 0;
+    char c;
+
+    while (t == false)
+    {
+        printf("Nom du jeu: \n");
+        fgets(nom, 100, stdin);
+        nom[strlen(nom)-1] = '\0';
+
+        wh = findJeu(tJeu, nb, nom, &t);
+        if (t == true)
+            return wh;
+
+        printf("Jeu non-trouvé, voulez-vous réessayer ? (o/n)\n");
+        scanf("%*c%c", &c);
+        if (c == 'n')
+            return -1;
+    }
+    return wh;
+
+}

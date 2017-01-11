@@ -56,6 +56,8 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj)
                 break;
             case 3:
                 printf("\nYou chose to register a loan.\n");
+                tmp = getchar();
+
                 printf("\n");
                 break;   
             case 4:
@@ -159,14 +161,12 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
 {
 
     int inf = 0, sup = nb-1, m, i;
-    for(i=0; i<20; i++){
-            nom[i]=tolower(nom[i]);
+
+    
     while (inf <= sup)
     {
         m = (sup+inf)/2;
 
-        for(i=0; i<20; i++)
-            tJeu[m]->nom[i]=tolower(tJeu[m]->nom[i]);
 
         if (strcmp(nom, tJeu[m]->nom) == 0)
         {
@@ -179,55 +179,44 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
             inf = m+1;
 
     }
-    printf("not found\n");
+    printf("game not found\n");
     return inf;
 }
 
 
-void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc) 
+void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc) 
 {
     Emprunt empr;
     bool t;
-    int iCli, iJeu;
+    int whC, whJ;
 
-    iCli = findCli(tCli, nbc, nom, prenom, &t); //on cherche le client qui veut emprunter
-    if (t == false)
+    whC = inputFindCli(tCli, nbc);
+    whJ = inputFindJeu(tJeu, nbj);
+    if (whC == -1 || whJ == -1)
     {
-        printf("user not found\n");
+        printf("Opération annulée");
         return;
     }
 
-    if (tCli[iCli]->paye == false)
-    {
-        printf("Your subscription has expired\n");
-    }
-    iJeu = findJeu(tJeu, nbj, game, &t); //on cherche le jeu a emprunter
-    if (t == false)
-    {
-        printf("Game not found\n");
-        return;
-    }
-    if (tJeu[iJeu]->nbdisp == 0) //on regarde si le jeu est disponible
+
+    if (tJeu[whJ]->nbdisp == 0) //on regarde si le jeu est disponible
     {
         printf("Ce jeu n'est plus disponible\n");
         return;
     }
     //on créé l'emprunt
-    strcpy(empr.jeu.nom, tJeu[iJeu]->nom);
-    empr.date.an = system("date +%Y");
-    empr.date.mois = system("date +%m");
-    empr.date.jour = system("date +%d");
+    strcpy(empr.jeu.nom, tJeu[whJ]->nom);
+    
+    empr.date = getDate();
 
-    empr.retard = false;
-
-    if (nbEmpr(*tCli[iCli]) == 3) //on verifie si le client a moins de 3 emprunts en cours
+    if (nbEmpr(*tCli[whC]) == 3) //on verifie si le client a moins de 3 emprunts en cours
     {
         printf("Vous ne pouvez plus emprunter\n");
         return;
     }
 
-    tCli[iCli]->lEmpr = insEmpr(*tCli[iCli], empr); //on insere l'emprunt
-    tJeu[iJeu]->nbdisp -= 1; //ou enleve un exemplaire disponible du jeu
+    tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr); //on insere l'emprunt
+    tJeu[whJ]->nbdisp -= 1; //ou enleve un exemplaire disponible du jeu
 
 }
 
@@ -244,19 +233,19 @@ void saveEmprunt(Client **tCli, int nb)
     
     for (i = 0; i < nb; i++)
     {
-        if (tCli[i]->lEmpr != NULL)
+        if (tCli[i]->lEmpr != NULL) //if user has emprunts
         {
             while (tCli[i]->lEmpr != NULL)
             {
-                fprintf(fe, "%s\n%s\n%d/%d/%d\n%s\n", 
+                fprintf(fe, "%s\n%s\n%d/%d/%d\n%s\n%d\n", 
                         tCli[i]->nom, tCli[i]->prenom, 
                         tCli[i]->lEmpr->empr.date.jour, tCli[i]->lEmpr->empr.date.mois, tCli[i]->lEmpr->empr.date.an,
-                        tCli[i]->lEmpr->empr.jeu.nom);
+                        tCli[i]->lEmpr->empr.jeu.nom, 
+                        tCli[i]->lEmpr->empr.retard);
                 tCli[i]->lEmpr = tCli[i]->lEmpr->nxt;
             }
         }
     }
-
     fclose(fe);
 }
 
@@ -278,6 +267,7 @@ Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)
 
 
     fscanf(fe, "%d\n", nb); //Get number of afternoons
+
     tAft = (Afternoon *)malloc(*nb * sizeof(Afternoon));
     if (tAft == NULL)
     {
@@ -294,7 +284,7 @@ Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)
         fscanf(fe, "%d %d\n", &(tAft[i].nbPtot), &nbCli); //get nbPtot & nbCli
         tAft[i].nbPdisp = tAft[i].nbPtot - nbCli;
 
-        for (j=0; j < nbCli; j++)
+        for (j=0; j < nbCli; j++) //insert registered client 
         {
             fgets(nom, 20, fe);
             nom[strlen(nom)-1] = '\0';
@@ -303,9 +293,10 @@ Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)
 
             wh = findCli(tCli, nbc, nom, prenom, &t);
 
-            tAft[i].lCli=insCliAft(*tCli[wh], tAft[i]);
+            tAft[i].lCli = insCliAft(*tCli[wh], tAft[i]);
+        
         }
-            }
+    }
     fclose(fe);
     return tAft;
 }
@@ -364,37 +355,33 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
 {
     char *jeu, *nom, *prenom;
     bool t = false;
-    int wh, i;
+    int whC, i;  
 
-    while (t == false)
+
+
+
+    whC = inputFindCli(tCli, nbc);
+    if (whC == -1)
     {
-        printf("Nom du jeu: ");
-        fgets(jeu, 30, stdin);
-        jeu[strlen(jeu)-1] = '\0'; //nom
-        for (i = 0; i < nba; i++)
-            if (strcmp(jeu, tAft[i].jeu.nom) == 0)
-            { 
-                t = true;
-                break;
-            }
+        printf("Opération annulée");
+        return;
     }
+    
+    printf("Nom du jeu: \n");
+    fgets(jeu, 20, stdin); //retry
+    jeu[strlen(jeu)-1] = '\0';
 
-    t = false;
-    while (t == false)
-    {
-        printf("Nom: ");
-        fgets(nom, 30, stdin);
-        nom[strlen(nom)-1] = '\0'; //nom
-
-        printf("Prenom: ");
-        fgets(prenom, 20, stdin);
-        prenom[strlen(prenom)-1] = '\0'; //prenom
-
-        wh = findCli(tCli, nbc, nom, prenom, &t); 
-        if (t == true)
+    for (i=0; i < nba; i++)
+        if (strcmp(tAft[i].jeu.nom, jeu) == 0)
+        {
+            t == true;
             break;
+        }
 
-        printf("User not found, retry\n");
+    if (t == false)
+    {
+        printf("Il n'y a pas d'apres midi programmé pour ce jeu\n");
+        return;
     }
 
     if (tAft[i].nbPdisp == 0)
@@ -403,7 +390,7 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
         return;
     }
 
-    tAft[i].lCli = insCliAft(*tCli[wh], tAft[i]);
+    tAft[i].lCli = insCliAft(*tCli[whC], tAft[i]);
     tAft[i].nbPdisp -= 1;
 }
 
@@ -412,7 +399,7 @@ liCli insCliAft(Client cli, Afternoon aft)
 {
     MaillonC *m;
 
-    m = (MaillonC *)malloc(sizeof(Client));
+    m = (MaillonC *)malloc(sizeof(MaillonC));
 
     if (m == NULL)
     {
@@ -421,7 +408,9 @@ liCli insCliAft(Client cli, Afternoon aft)
     }
 
     m->cli = cli;
+
     m->nxt = aft.lCli;
+
     return m;
 }
 
@@ -442,9 +431,9 @@ void saveAft(Afternoon tAft[], int nb)
 
     for (i = 0; i < nb; i++)
     {
-        fprintf(fe, "%s\n%d/%d/%d\n%d%d", tAft[i].jeu.nom, //header for the afternoon
+        fprintf(fe, "%s\n%d/%d/%d\n%d %d\n", tAft[i].jeu.nom, //header for the afternoon
                 tAft[i].date.jour, tAft[i].date.mois, tAft[i].date.an,
-                tAft[i].nbPtot, tAft[i].nbPdisp);
+                tAft[i].nbPtot, (tAft[i].nbPtot - tAft[i].nbPdisp));
 
         if (tAft[i].lCli != NULL)
         {
@@ -465,7 +454,7 @@ void checkTime(Client **tCli, int nb)
     lEmprunt tmp;
     int i;
 
-    Date d = {system("date +%d"), system("date +%m"), system("date +%Y")};
+    Date d = getDate();
 
     for (i=0; i < nb; i++) //for each client
     {
@@ -486,14 +475,20 @@ void checkTime(Client **tCli, int nb)
         if (subDate(d, tCli[i]->dIns) > 365) //if client outdated
             tCli[i]->paye = false; //he needs to pay again
     }
-
 }
 
+Date getDate()
+{
+    FILE *fe;
+    Date d;
+    system("date +%d-%m-%Y > date.don");
 
-
-
-
-
+    fe = fopen("date.don", "r");
+    if (fe == NULL)
+        exit(1);
+    fscanf(fe, "%d-%d-%d", &(d.jour), &(d.mois), &(d.an));
+    return d;
+}
 
 
 

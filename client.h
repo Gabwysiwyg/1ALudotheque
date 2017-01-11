@@ -46,7 +46,6 @@ void rightShift(Client **tCli, int nbmax, int n); //Done
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done
 void saveClient(Client **tClient, int nb);
 
-ImputNewCliAndRetry (Client cli, int *nb);
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t); //DICHOTOMIQUE //Done
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t);
 Client ** newClient(Client **tCli, int *nb); // Done
@@ -66,3 +65,7 @@ lEmprunt supEmprtete(lEmprunt l);
 lEmprunt supEmpr(lEmprunt l, char *nom, bool *t);
 void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj);
 
+Client InputNewCliAndRetry (Client cli, int nb);
+
+int inputFindCli(Client **tCli, int nb);
+int inputFindJeu(Jeu **tJeu, int nb);

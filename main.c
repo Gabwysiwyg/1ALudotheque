@@ -10,25 +10,26 @@ int main (void)
     Afternoon *tAft;
     int nbc=0, nbj=0, nba=0;
     bool t;
+    
+
 
     tCli = loadClient(&nbc);
 
     tJeu = loadGameList (&nbj);
 
-    tAft = loadAfternoon(&nba, tCli, nbc);
+    loadEmprunt(tCli, nbc, tJeu, nbj);
 
+    //tAft = loadAfternoon(&nba, tCli, nbc);
+    
 
     //Menu(tCli, nbc, tJeu, nbj);
-
-
-    //printf("%s\n", tAft[0].jeu.nom);
-
+    //newEmprunt(tJeu, nbj, tCli, nbc);
 
     saveClient(tCli, nbc);
 
     saveEmprunt(tCli, nbc);
 
-    //saveAft(tAft, nba);
+    saveAft(tAft, nba);
     free(tCli);
     free(tJeu);
 	return 0;

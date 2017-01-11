@@ -26,7 +26,7 @@ void Menu (Client **tCli, int nbc, Jeu **tJeu, int nbj); // Done
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
 
-void newEmprunt(char *nom, char *prenom, char *game, Jeu **tJeu, int nbj, Client **tCli, int nbc); //Done
+void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc);
 void saveEmprunt(Client **tCli, int nb); //Done
 
 Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc);
@@ -36,3 +36,5 @@ liCli insCliAft(Client cli, Afternoon aft);
 
 int subDate(Date d1, Date d2); // Done
 void checkTime(Client **tCli, int nb);
+
+Date getDate();
