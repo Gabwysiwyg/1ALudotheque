@@ -12,21 +12,21 @@ void printMenu (int *choix)
 	printf("\n");
 	printf("*********                |Menu|                *********\n");
 	printf("\n");
-	printf("||||||||| 1 : Register a new member            |||||||||\n");
-	printf("||||||||| 2 : Delete a member                  |||||||||\n");
-	printf("||||||||| 3 : Register a loan                  |||||||||\n");
-	printf("||||||||| 4 : Register a new theme afternoon   |||||||||\n");
-	printf("||||||||| 5 : Register member to a theme aft.  |||||||||\n");
-	printf("||||||||| 6 : Edit the game list               |||||||||\n");
-	printf("||||||||| 7 : Edit list of afternoon's members |||||||||\n");
-	printf("||||||||| 8 : Edit borrowers list              |||||||||\n");
-	printf("||||||||| 9 : Exit                             |||||||||\n");
+	printf("||||||||| 1 : Enregistrer un nouveau membre    |||||||||\n");
+	printf("||||||||| 2 : Supprimer un membre              |||||||||\n");
+	printf("||||||||| 3 : Enregistrer un emprunt           |||||||||\n");
+	printf("||||||||| 4 : Créer une après-midi thématique  |||||||||\n");
+	printf("||||||||| 5 : Enregistrer un membre à une a.p  |||||||||\n");
+	printf("||||||||| 6 : Afficher liste des jeux          |||||||||\n");
+	printf("||||||||| 7 : Afficher liste des participants  |||||||||\n");
+	printf("||||||||| 8 : Afficher liste des emprunts      |||||||||\n");
+	printf("||||||||| 9 : Quitter                          |||||||||\n");
 	printf("\n");
-	printf("Please, make your choice :");
+	printf("Veuillez faire votre choix :\t");
 	scanf("%d", choix);
 }
 
-void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj)
+void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
 {
 	int choix;
     char tmp;
@@ -34,73 +34,98 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj)
 	{  
         system("clear");
         printMenu(&choix);
-        while(choix>9)
+        while(choix>9 || choix<1)
         {
-            printf("Wrong choice, please try again.\n");
+            printf("Mauvaise saisie, veuille réessayer s'il vous plait.\n");
             printMenu(&choix);
         }
 
 		switch(choix)
     	{
             case 1:
-                printf("\nYou chose to register a new member.\n");
+                printf("\nVous avez choisi d'enregister un nouveau membre.\n");
                 tmp = getchar();
+                printf("\n");
                 tCli = newClient(tCli, &nbc);
+                printf("\n");
+                printf("C'est fait, merci!\n");
                 break;
             case 2:
-             	printf("\nYou chose to delete a member.\n");
+             	printf("\nVous avez choisi de supprimer un membre.\n");
                 tmp = getchar();
-                delClient(tCli, &nbc);
-
                 printf("\n");
+                delClient(tCli, &nbc);
+                printf("\n");
+                printf("C'est fait, merci!\n");
                 break;
             case 3:
-                printf("\nYou chose to register a loan.\n");
+                printf("\nVous avez choisi de faire un nouvel emprunt.\n");
                 tmp = getchar();
-
                 printf("\n");
+                newEmprunt(tJeu, nbj, tCli, nbc);
+                printf("\n");
+                printf("C'est fait, merci!\n");
                 break;   
             case 4:
-                printf("\nYou chose to register a new theme afternoon.\n");
+                printf("\nVous avez choisi de créer un après midi thématique.\n");
+                tmp = getchar();
                 printf("\n");
+                tAft=newAfternoon(tAft, &nba, tJeu, nbj);
+                printf("\n");
+                printf("C'est fait, merci!\n");
                 break;
             case 5:
-                printf("\nYou chose to register member to a theme aft.\n");
+                printf("\nVous avez choisi d'inscrire un client à un après midi thématique.\n");
+                tmp = getchar();
                 printf("\n");
+                regForAfternoon(tAft, nba, tCli, nbc);
+                printf("\n");
+                printf("C'est fait, merci!\n");
                 break;
             case 6:
                 printf("\nYou chose to edit the game list.\n");
+                tmp = getchar();
                 printf("\n");
+
+                printf("\n");
+                printf("Et voila le travail : \n");
                 break;
             case 7:
                 printf("\nYou chose to edit the list of afternoons' members.\n");
+                tmp = getchar();
                 printf("\n");
+
+                printf("\n");
+                printf("Et voila le travail : \n");
                 break; 
             case 8:
                 printf("\nYou chose to edit borrowers list.\n");
+                tmp = getchar();
                 printf("\n");
+
+                printf("\n");
+                printf("Et voila le travail : \n");
                 break;
             case 9:
-                printf("\nYou chose to exit. \t");
-                printf("Glad you came, see you soon!\n");
+                printf("\nVous avez choisi de quitter.\n");
+                printf("Au revoir!\n");
                 printf("\n");
                 return; 
             default:
-                printf("Wrong choice, please try again.\n");
+                printf("Mauvaise saisie, veuille réessayer s'il vous plait.\n");
                 break; 
         }
         
         choix = 0;
         printf("\nDo you want to realize another task ? (y/n)\n");
         scanf("%c%*c", &tmp);
-        if (tmp == 'n')
+        if (tmp == 'n' || tmp =='N')
         {
-            printf("quitting\n");
-            //free(tCli);
-            free(tJeu);
+            printf("Okay, quitting\n");
             return;
         }
-
+        else
+            Menu(tCli, nbc, tJeu, nbj, tAft, nba);
     }
 }
 
@@ -179,7 +204,7 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
             inf = m+1;
 
     }
-    printf("game not found\n");
+    *t=false;
     return inf;
 }
 
@@ -231,6 +256,8 @@ void saveEmprunt(Client **tCli, int nb)
         exit(1);
     }                          
     
+    fprintf(fe, "%d\n", nb);
+
     for (i = 0; i < nb; i++)
     {
         if (tCli[i]->lEmpr != NULL) //if user has emprunts
@@ -242,7 +269,7 @@ void saveEmprunt(Client **tCli, int nb)
                         tCli[i]->lEmpr->empr.date.jour, tCli[i]->lEmpr->empr.date.mois, tCli[i]->lEmpr->empr.date.an,
                         tCli[i]->lEmpr->empr.jeu.nom, 
                         tCli[i]->lEmpr->empr.retard);
-                tCli[i]->lEmpr = tCli[i]->lEmpr->nxt;
+                        tCli[i]->lEmpr = tCli[i]->lEmpr->nxt;
             }
         }
     }
@@ -254,7 +281,7 @@ Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)
 {
     Afternoon *tAft;
     FILE *fe;
-    int i, j, nbCli, wh;
+    int i, j, nbCli, wh, nba;
     char nom[20], prenom[20];
     bool t;
 
@@ -374,7 +401,7 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
     for (i=0; i < nba; i++)
         if (strcmp(tAft[i].jeu.nom, jeu) == 0)
         {
-            t == true;
+            t = true;
             break;
         }
 
@@ -488,6 +515,50 @@ Date getDate()
         exit(1);
     fscanf(fe, "%d-%d-%d", &(d.jour), &(d.mois), &(d.an));
     return d;
+}
+
+char * CreatePrompt (void)
+{
+    char *invite = NULL;
+    char const *user = getenv("USERNAME"); 
+
+    if (user == NULL)
+    {
+      user = getenv("USER");
+        if (user == NULL)
+         user = "";
+    }
+
+    char const *host = getenv("HOSTNAME");  //Get donnée pour PATH
+    if (host == NULL)
+            host = "";
+
+    char const *aux = getenv("PWD");
+    if (aux == NULL)
+            aux = "";
+    
+    char const *rep = aux + strlen(aux);
+    while (rep >= aux && *rep != '/')
+    {
+        rep--;
+    }            
+    rep++;
+
+    invite = malloc(strlen(user) + strlen(host) + strlen(rep) + 6);
+
+    if (invite != NULL)
+    {
+        strcpy(invite, "[");
+        strcat(invite, user);
+        strcat(invite, "@");
+        strcat(invite, host);
+        strcat(invite, " ");        //Insert data in tab for PATH
+        strcat(invite, rep);
+        strcat(invite, "]");
+        strcat(invite, "$");
+        strcat(invite, " ");
+    }
+    return invite; //Return complete string
 }
 
 

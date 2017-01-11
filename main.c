@@ -5,32 +5,47 @@
 
 int main (void)
 {
-    Client **tCli;                  //
+    Client **tCli;                  
     Jeu **tJeu;
     Afternoon *tAft;
-    int nbc=0, nbj=0, nba=0;
+    int nbc=0, nbj=0, nba=0, end = 0;
     bool t;
-    
+
+   while (!end)
+   {
+        char *s = CreatePrompt();
+        if (s != NULL)
+        {
+            printf ("%s", s);
+            fflush (stdout);
+            free(s), s = NULL;
+        }
+
+        {
+            char line[128]="";
+            fgets(line, sizeof line, stdin);
+            end = strcmp(line, "Quit Bitch\n") == 0;
+        }
+
+        tCli = loadClient(&nbc);
+        tJeu = loadGameList (&nbj);
+        loadEmprunt(tCli, nbc, tJeu, nbj);
+        tAft = loadAfternoon(&nba, tCli, nbc);
+
+        Menu(tCli, nbc, tJeu, nbj, tAft, nba);
+
+        
 
 
-    tCli = loadClient(&nbc);
 
-    tJeu = loadGameList (&nbj);
 
-    loadEmprunt(tCli, nbc, tJeu, nbj);
+        saveClient(tCli, nbc);
+        saveEmprunt(tCli, nbc);
+        saveAft(tAft, nba);
 
-    //tAft = loadAfternoon(&nba, tCli, nbc);
-    
-
-    //Menu(tCli, nbc, tJeu, nbj);
-    //newEmprunt(tJeu, nbj, tCli, nbc);
-
-    saveClient(tCli, nbc);
-
-    saveEmprunt(tCli, nbc);
-
-    saveAft(tAft, nba);
-    free(tCli);
-    free(tJeu);
-	return 0;
+        free(tCli);
+        free(tJeu);
+        free(tAft);
+    }
+    return 0;
 }

@@ -202,13 +202,13 @@ Client ** newClient(Client **tCli, int *nb)
     return tCli;
 }
 
-void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
+void updateCli(Client *cli)
 {
     char ans;
     
     printf("Update nom ? (o/n)\n");
     scanf("%*c%c", &ans);
-    if (ans == 'o')
+    if (ans == 'o' || ans == 'O')
     {
         printf("Nouveau nom: \n");
         fgets(cli->nom, 20, stdin);
@@ -217,7 +217,7 @@ void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
 
     printf("Update prenom ? (o/n)\n");
     scanf("%*c%c", &ans);
-    if (ans == 'o')
+    if (ans == 'o' || ans == 'O')
     {
         printf("Nouveau prenom: \n");
         fgets(cli->prenom, 20, stdin);
@@ -226,7 +226,7 @@ void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
 
     printf("Update adresse ? (o/n)\n");
     scanf("%*c%c", &ans);
-    if (ans == 'o')
+    if (ans == 'o' || ans == 'O')
     {
         printf("Nouvelle adresse: \n");
         fgets(cli->adresse, 50, stdin);
@@ -235,7 +235,7 @@ void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
 
     printf("Update code postal ? (o/n)\n");
     scanf("%*c%c", &ans);
-    if (ans == 'o') //if we change postal code we also change city
+    if (ans == 'o' || ans == 'O') //if we change postal code we also change city
     {
         printf("Nouveau code postal: \n");
         scanf("%s", cli->nom);
@@ -245,7 +245,7 @@ void updateCli(Client *cli) //TODO optimiser si mauvaise saisie.
 
 	printf("Update ville ? (o/n)\n");
 	scanf("%*c%c", &ans);
-	if (ans == 'o')
+	if (ans == 'o' || ans == 'O')
 	{
 	   printf("Nouvelle ville: \n");
 	   scanf("%s", cli->ville);
@@ -322,7 +322,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
     Date d;
     char nom[20], prenom[20];
     char game[100];
-    int whJ, whC;
+    int whJ, whC, nbemp, i;
     bool t, ret;
     fe=fopen("emprunts.don", "r");
     if (fe ==NULL)
@@ -331,7 +331,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
         exit(1);
     }
 
-
+    fscanf(fe, "%d\n", &nbemp);
 
     fgets(nom, 20, fe);
     nom[strlen(nom)-1] = '\0';
@@ -341,10 +341,9 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
     
     fgets(game, 100, fe);
     game[strlen(game)-1] = '\0';
-
     fscanf(fe, "%d\n", &ret);
-    printf("load\n");
-    while (!feof(fe))
+
+    for (i=0; i<nbemp; i++)
     {   
 
         whC = findCli(tCli, nb, nom, prenom, &t);
@@ -356,11 +355,13 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
         }
 
         whJ = findJeu(tJeu, nbj, game, &t);
+
         if (t == false)
         {
-            printf("game not found\n");
+            printf("game not found lol\n");
             return;
         }
+
 
         strcpy(empr.jeu.nom, tJeu[whJ]->nom);
         empr.jeu.nbdisp = tJeu[whJ]->nbdisp;
@@ -373,14 +374,13 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
         nom[strlen(nom)-1] = '\0';
         fgets(prenom, 20, fe);
         prenom[strlen(prenom)-1] = '\0';
-        fscanf(fe, "%d/%d/%d", &(d.jour), &(d.mois), &(d.an));
+        fscanf(fe, "%d/%d/%d\n", &(d.jour), &(d.mois), &(d.an));
         
         fgets(game, 100, fe);
         game[strlen(game)-1] = '\0';
 
         fscanf(fe, "%d\n", &ret);
     }
-    printf("done\n");
 }
 
 lEmprunt supEmprtete(lEmprunt l)
@@ -447,23 +447,23 @@ void UpdateGlobale (Client **tCli, int nb)
     ind = findCli(tCli, nb, nom, prenom, &t);
 
     printf("Voulez vous resouscrire à notre offre ? (o/n)\n");
-    scanf("%c%*c", rep);
+    scanf("%c%*c", &rep);
     while (rep != 'o'|| rep != 'O'|| rep != 'n'|| rep != 'N'){
         printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
-        scanf("%c%*c", rep);
+        scanf("%c%*c", &rep);
     }
 
-    if (rep == 'O'||rep == 'o')
+    if (rep == 'O'|| rep == 'o')
     {
         newSouscription(tCli, nb, ind);
         printf("Done! Merci de votre fidélité!\n");
     }
     
     printf("Voulez vous modifier vos données personelles ? (o/n)\n");
-    scanf("%c%*c", rep);
+    scanf("%c%*c", &rep);
     while (rep != 'o' || rep != 'O'|| rep != 'n'|| rep != 'N'){
         printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
-        scanf("%c%*c", rep);
+        scanf("%c%*c", &rep);
     }
 
     if (rep == 'O' || rep == 'o')

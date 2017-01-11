@@ -21,20 +21,23 @@ typedef struct {
 
 
 void printMenu(int *choix); // Done
-void Menu (Client **tCli, int nbc, Jeu **tJeu, int nbj); // Done
+void Menu (Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba); // Done
 
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
 
-void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc);
+void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc); //Done
 void saveEmprunt(Client **tCli, int nb); //Done
+void saveAft(Afternoon tAft[], int nb); //Done
 
-Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc);
-Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb); //TODO Faire la fonction avec tab pointeurs
-void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc);
-liCli insCliAft(Client cli, Afternoon aft);
+Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc); //Done
+Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb); //Done
+void regForAfternoon(Afternoon *tAft, int nba, Client **tCli, int nbc); //Done
+liCli insCliAft(Client cli, Afternoon aft); //Done
 
 int subDate(Date d1, Date d2); // Done
-void checkTime(Client **tCli, int nb);
+void checkTime(Client **tCli, int nb); //TODO Fix maybe
 
-Date getDate();
+Date getDate(); //Done
+
+char * CreatePrompt (void); //Done
