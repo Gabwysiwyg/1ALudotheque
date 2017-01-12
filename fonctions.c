@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <printf.h>
+#include <math.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "fonctions.h"
 
 
@@ -574,13 +578,202 @@ void Prompt (int end)
             free(s), s = NULL;
         }
 
-        Menu(tCli, nbc, tJeu, nbj, tAft, nba);
         printf("\n\n\t\tBonjour et bienvenu sur le gestionnaire de Ludothèque, tapez ENTER pour continuer.\n");
         char line[128]="";
         fgets(line, sizeof line, stdin);
         end = strcmp(line, "q") == 0;
     }
 }
+
+int InterfGraphique(void)
+{
+    //Created by Gabin  Salabert on 11/01/2017.
+    //Copyright © 2017 Gabin  Salabert. All rights reserved.
+    //brew update && brew install sdl2
+
+        //initialisation de la sdl
+        if (SDL_Init (SDL_INIT_VIDEO) < 0)
+        {   printf("erreur SDL_Init: %s\n", SDL_GetError());
+            return EXIT_FAILURE;
+        }
+        atexit(SDL_Quit);
+        //initialisation de la sdl_image
+        if (IMG_Init(IMG_INIT_PNG) < 0)
+        {   printf("erreur IMG_Init: %s\n", SDL_GetError());
+            return EXIT_FAILURE;
+        }
+        atexit(IMG_Quit);
+        //Initialisation de la sdl_ttf
+        if( TTF_Init() == -1 )
+        {
+            return false;    
+        }
+        
+        //Contexte d'affichage
+        SDL_Window *screen;
+        //Tampon de rendu
+        SDL_Renderer *renderer;
+        //Position de l'écran, de rayman et des différents sprites de rayman
+        SDL_Rect pecran, prayman, pban, pbar;
+        SDL_Rect raymantiles[16];
+        
+        unsigned int temps, tempsbride = 0, tempsanim = 0, index, anim = 0;
+        bool droite = true, end = false;
+        int cpt = 0;
+        
+        
+        //initialisation des positions
+        pecran.x = 0;
+        pecran.y = 0;
+
+        prayman.w = 180;
+        prayman.h = 180;
+        prayman.y = 250;
+
+        pban.x = 15;
+        pban.y = 15;
+        pban.w = 610;
+        pban.h = 80;
+
+        pbar.w = 580;
+        pbar.y = 150;
+        pbar.x = 30;
+        pbar.h = 80;
+
+
+        for(index = 0 ; index < 6 ; index++)
+        {
+            raymantiles[index].x = index*60;
+            raymantiles[index].y = 1100;
+            raymantiles[index].w = 60;
+            raymantiles[index].h = 68;
+        }
+        for(index = 0 ; index < 6 ; index++)
+        {
+            raymantiles[index+6].x = index*60;
+            raymantiles[index+6].y = 68+1100;
+            raymantiles[index+6].w = 60;
+            raymantiles[index+6].h = 68;
+        }
+        for(index = 0 ; index < 4 ; index++)
+        {
+            raymantiles[index+12].x = index*60;
+            raymantiles[index+12].y = 136+1100;
+            raymantiles[index+12].w = 60;
+            raymantiles[index+12].h = 68;
+        }
+        
+        //suppression du curseur de souris
+        SDL_ShowCursor(SDL_DISABLE);
+        //création de la fenêtre
+        screen = SDL_CreateWindow("Gestionnaire de Ludothèque", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+        //création du tampon de rendu
+        renderer = SDL_CreateRenderer(screen, -1, SDL_RENDERER_ACCELERATED);
+        //récupération de la taille de l'écran
+        SDL_GetWindowSize(screen , &pecran.w , &pecran.h);
+
+        SDL_Texture *fond2 = IMG_LoadTexture(renderer, "frame-06.gif");
+        SDL_Texture *fond3 = IMG_LoadTexture(renderer, "frame-20.gif");
+        SDL_Texture *fond4 = IMG_LoadTexture(renderer, "frame-28.gif");
+        SDL_Texture *ban = IMG_LoadTexture(renderer, "Bannière.jpg");
+        SDL_Texture *rayman = IMG_LoadTexture(renderer, "rayman.png");
+        SDL_Texture *fond1 = IMG_LoadTexture(renderer, "image.jpg");
+        
+        //Si erreur dans la création de la fenêtre, du tampon de rendu et des images. (fonction critiques (erreurs))
+        if (screen == NULL || renderer == NULL || rayman == NULL || fond2 == NULL || fond3 == NULL || fond4 == NULL || ban == NULL || fond1 == NULL)
+        {
+            printf("erreur: %s\n", SDL_GetError());
+            return EXIT_FAILURE;
+        }
+        
+        //entrée en boucle principale
+        while(1)
+        {
+            //récupération du temps
+            temps = SDL_GetTicks();
+            
+            //si le programme tourne depuis "x" ms, on quitte;
+            if (temps >= 5000) { break; }
+            
+            
+            //test pour changer le sprite d'animation si "x" ms sont écoulées
+            if (temps - tempsanim >= 60)
+            {
+                //sauvegarde du temps actuel pour la prochaine itération
+                tempsanim = temps;
+                //sprite suivant
+                anim++;
+                //si le dernier sprite est atteint, on reviens au premier
+                if(anim == 16){anim = 0;}
+            }
+            
+            //bride pour sinchro ecran ~60fps
+            if (temps - tempsbride >= 16)
+            {
+                //assignation du temps actuel pour la prochaine itération
+                tempsbride = temps;
+                
+                //si rayman touche la bordure d'écran a droite, il fait demi tour !
+                if (prayman.x + prayman.w >= pecran.w){ droite = false; }
+
+                //si il touche la bordure gauche, il fait de même.
+                if (prayman.x <= 0) 
+                {
+                    cpt++;
+                    droite = true;
+                    if (cpt == 2)
+                        end = true;
+                }
+                
+                
+                //vidage du tampon de rendu
+                SDL_RenderClear(renderer);
+                
+                //copie de la banniere 
+                
+                //si rayman vas à gauche
+                if (!droite)
+                {
+                    //décrémentation horizontale de la position de rayman.
+                    prayman.x -= 5;
+                    //copie de rayman (en inversant le sens de l'image) sur le tampon
+                    SDL_RenderCopy(renderer, fond1, NULL, &pecran);
+                    SDL_RenderCopy(renderer, fond3, NULL, &pbar);
+                    SDL_RenderCopy(renderer, ban, NULL, &pban);
+                    SDL_RenderCopyEx(renderer, rayman, &raymantiles[anim], &prayman, 0,NULL, SDL_FLIP_HORIZONTAL);  
+                }
+                //sinon
+                else
+                {
+                    //incrémentation horizontale de la position de rayman.
+                    prayman.x += 5;
+                    //copie de rayman sur le tampon
+                    SDL_RenderCopy(renderer, fond1, NULL, &pecran);
+                    SDL_RenderCopy(renderer, fond2, NULL, &pbar);
+                    SDL_RenderCopy(renderer, ban, NULL, &pban);
+                    SDL_RenderCopy(renderer, rayman, &raymantiles[anim], &prayman);
+                }
+
+                //affichage du tampon de rendu sur l'écran.
+                if (end == true){
+                    SDL_RenderCopy(renderer, fond1, NULL, &pecran);
+                    SDL_RenderCopy(renderer, fond4, NULL, &pbar);
+                    SDL_RenderCopy(renderer, ban, NULL, &pban);
+                    SDL_RenderCopy(renderer, rayman, &raymantiles[anim], &prayman);
+                }
+                SDL_RenderPresent(renderer);
+
+            }
+            else
+            {
+                // si l'écran ne suis pas, ont fait une pause.
+                // cela permet de grandement libérer le CPU.
+                SDL_Delay(5);
+            }
+
+        }
+        return EXIT_SUCCESS;
+    }
 
 
 

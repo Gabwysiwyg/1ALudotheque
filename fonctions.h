@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "client.h"
 
 
@@ -39,6 +43,8 @@ int subDate(Date d1, Date d2); // Done
 void checkTime(Client **tCli, int nb); //TODO Fix maybe
 
 Date getDate(); //Done
+
+int InterfGraphique(void);
 
 char * CreatePrompt (void); //Done but not complete
 void Prompt (int end); //Done but not complete
