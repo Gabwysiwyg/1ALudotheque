@@ -562,6 +562,27 @@ char * CreatePrompt (void)
 }
 
 
+void Prompt (int end)
+{
+    while (!end)
+    {
+        char *s = CreatePrompt();
+        if (s != NULL)
+        {
+            printf ("%s", s);
+            fflush (stdout);
+            free(s), s = NULL;
+        }
+
+        Menu(tCli, nbc, tJeu, nbj, tAft, nba);
+        printf("\n\n\t\tBonjour et bienvenu sur le gestionnaire de Ludothèque, tapez ENTER pour continuer.\n");
+        char line[128]="";
+        fgets(line, sizeof line, stdin);
+        end = strcmp(line, "q") == 0;
+    }
+}
+
+
 
 
 

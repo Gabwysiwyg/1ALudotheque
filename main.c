@@ -11,41 +11,19 @@ int main (void)
     int nbc=0, nbj=0, nba=0, end = 0;
     bool t;
 
-   while (!end)
-   {
-        char *s = CreatePrompt();
-        if (s != NULL)
-        {
-            printf ("%s", s);
-            fflush (stdout);
-            free(s), s = NULL;
-        }
+    tCli = loadClient(&nbc);
+    tJeu = loadGameList (&nbj);
+    loadEmprunt(tCli, nbc, tJeu, nbj);
+    tAft = loadAfternoon(&nba, tCli, nbc);
 
-        {
-            char line[128]="";
-            fgets(line, sizeof line, stdin);
-            end = strcmp(line, "Quit Bitch\n") == 0;
-        }
+    Menu(tCli, nbc, tJeu, nbj, tAft, nba);
 
-        tCli = loadClient(&nbc);
-        tJeu = loadGameList (&nbj);
-        loadEmprunt(tCli, nbc, tJeu, nbj);
-        tAft = loadAfternoon(&nba, tCli, nbc);
+    saveClient(tCli, nbc);
+    saveEmprunt(tCli, nbc);
+    saveAft(tAft, nba);
 
-        Menu(tCli, nbc, tJeu, nbj, tAft, nba);
-
-        
-
-
-
-
-        saveClient(tCli, nbc);
-        saveEmprunt(tCli, nbc);
-        saveAft(tAft, nba);
-
-        free(tCli);
-        free(tJeu);
-        free(tAft);
-    }
+    free(tCli);
+    free(tJeu);
+    free(tAft);
     return 0;
 }

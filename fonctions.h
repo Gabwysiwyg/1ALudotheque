@@ -40,4 +40,5 @@ void checkTime(Client **tCli, int nb); //TODO Fix maybe
 
 Date getDate(); //Done
 
-char * CreatePrompt (void); //Done
+char * CreatePrompt (void); //Done but not complete
+void Prompt (int end); //Done but not complete
