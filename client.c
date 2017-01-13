@@ -83,12 +83,18 @@ void rightShift(Client **tCli, int nbmax, int n)
 int cmpNomPrenom(Client c1, Client c2)
 {
     int j;
-    /*for (j = 0 ; j<21 ; j++){
-        c1.nom[j]=tolower(c1.nom[j]);
-        c2.nom[j]=tolower(c2.nom[j]);
-        c1.prenom[j]=tolower(c1.prenom[j]);
-        c2.prenom[j]=tolower(c2.prenom[j]);
-    }*/
+    char sub1[20], sub2[20], sub3[20], sub4[20];
+    strcpy(sub1, c1.nom);
+    strcpy(sub2, c1.prenom);
+    strcpy(sub3, c2.nom);
+    strcpy(sub4, c2.prenom);
+
+    for (j = 0 ; j<21 ; j++){
+        sub1[j]=tolower(sub1[j]);
+        sub2[j]=tolower(sub1[j]);
+        sub3[j]=tolower(sub1[j]);
+        sub4[j]=tolower(sub1[j]);
+    }
     if (strcmp(c1.nom, c2.nom) > 0)
         return 1;
     else if(strcmp(c1.nom, c2.nom) < 0)
@@ -649,5 +655,4 @@ int inputFindJeu(Jeu **tJeu, int nb)
             return -1;
     }
     return wh;
-
 }

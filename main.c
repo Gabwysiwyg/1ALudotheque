@@ -22,7 +22,8 @@ int main (void)
     loadEmprunt(tCli, nbc, tJeu, nbj);
     tAft = loadAfternoon(&nba, tCli, nbc);
 
-    endInt = InterfGraphique();
+    InterfGraphique();
+    
     Menu(tCli, nbc, tJeu, nbj, tAft, nba);
 
     saveClient(tCli, nbc);
