@@ -675,9 +675,9 @@ int InterfGraphique(void)
         SDL_Texture *fond2 = IMG_LoadTexture(renderer, "frame-06.gif");
         SDL_Texture *fond3 = IMG_LoadTexture(renderer, "frame-20.gif");
         SDL_Texture *fond4 = IMG_LoadTexture(renderer, "frame-28.gif");
-        SDL_Texture *ban = IMG_LoadTexture(renderer, "Bannière.jpg");
+        SDL_Texture *ban = IMG_LoadTexture(renderer, "ban.png");
         SDL_Texture *rayman = IMG_LoadTexture(renderer, "rayman.png");
-        SDL_Texture *fond1 = IMG_LoadTexture(renderer, "image.jpg");
+        SDL_Texture *fond1 = IMG_LoadTexture(renderer, "image2.jpg");
         
         //Si erreur dans la création de la fenêtre, du tampon de rendu et des images. (fonction critiques (erreurs))
         if (screen == NULL || renderer == NULL || rayman == NULL || fond2 == NULL || fond3 == NULL || fond4 == NULL || ban == NULL || fond1 == NULL)
@@ -772,6 +772,7 @@ int InterfGraphique(void)
             }
 
         }
+        SDL_Quit();
         return EXIT_SUCCESS;
     }
 

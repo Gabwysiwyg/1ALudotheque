@@ -14,7 +14,7 @@ int main (void)
     Client **tCli;                  
     Jeu **tJeu;
     Afternoon *tAft;
-    int nbc=0, nbj=0, nba=0, endPrompt = 0, endInt=42;
+    int nbc=0, nbj=0, nba=0, endPrompt=0;
     bool t;
 
     tCli = loadClient(&nbc);
@@ -23,16 +23,15 @@ int main (void)
     tAft = loadAfternoon(&nba, tCli, nbc);
 
     endInt = InterfGraphique();
-    if (endInt != 42){
-        Menu(tCli, nbc, tJeu, nbj, tAft, nba);
+    Menu(tCli, nbc, tJeu, nbj, tAft, nba);
 
-        saveClient(tCli, nbc);
-        saveEmprunt(tCli, nbc);
-        saveAft(tAft, nba);
+    saveClient(tCli, nbc);
+    saveEmprunt(tCli, nbc);
+    saveAft(tAft, nba);
 
-        free(tCli);
-        free(tJeu);
-        free(tAft);
-        return 0;
-    }
+    free(tCli);
+    free(tJeu);
+    free(tAft);
+    return 0;
+    
 }
