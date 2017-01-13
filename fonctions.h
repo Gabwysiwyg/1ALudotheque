@@ -30,8 +30,6 @@ void Menu (Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
 
-void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc); //Done
-void saveEmprunt(Client **tCli, int nb); //Done
 void saveAft(Afternoon tAft[], int nb); //Done
 
 Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc); //Done

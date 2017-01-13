@@ -213,72 +213,8 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
 }
 
 
-void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc) 
-{
-    Emprunt empr;
-    bool t;
-    int whC, whJ;
-
-    whC = inputFindCli(tCli, nbc);
-    whJ = inputFindJeu(tJeu, nbj);
-    if (whC == -1 || whJ == -1)
-    {
-        printf("Opération annulée");
-        return;
-    }
 
 
-    if (tJeu[whJ]->nbdisp == 0) //on regarde si le jeu est disponible
-    {
-        printf("Ce jeu n'est plus disponible\n");
-        return;
-    }
-    //on créé l'emprunt
-    strcpy(empr.jeu.nom, tJeu[whJ]->nom);
-    
-    empr.date = getDate();
-    empr.retard = 0;
-    if (nbEmpr(*tCli[whC]) == 3) //on verifie si le client a moins de 3 emprunts en cours
-    {
-        printf("Vous ne pouvez plus emprunter\n");
-        return;
-    }
-
-    tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr); //on insere l'emprunt
-    tJeu[whJ]->nbdisp -= 1; //ou enleve un exemplaire disponible du jeu
-
-    printf("%s %s: %d emprunts\n", tCli[whC]->nom, tCli[whC]->prenom, nbEmpr(*tCli[whC]));
-}
-
-void saveEmprunt(Client **tCli, int nb)
-{
-    int i;
-    FILE *fe;
-
-    fe=fopen("emprunts.don", "w");
-    if(fe == NULL){
-        printf("Erreur ouverture fichier\n");
-        exit(1);
-    }                          
-
-    for (i = 0; i < nb; i++)
-    {
-        if (tCli[i]->lEmpr != NULL) //if user has emprunts
-        {
-            while (tCli[i]->lEmpr != NULL)
-            {
-                fprintf(fe, "%s\n%s\n%d/%d/%d\n%s\n%d\n", 
-                        tCli[i]->nom, tCli[i]->prenom, 
-                        tCli[i]->lEmpr->empr.date.jour, tCli[i]->lEmpr->empr.date.mois, tCli[i]->lEmpr->empr.date.an,
-                        tCli[i]->lEmpr->empr.jeu.nom, 
-                        tCli[i]->lEmpr->empr.retard);
-                        tCli[i]->lEmpr = tCli[i]->lEmpr->nxt;
-            }
-        }
-    }
-    fprintf(fe, "\nend");
-    fclose(fe);
-}
 
 
 Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc)

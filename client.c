@@ -6,30 +6,6 @@
 #include "client.h"
 
 
-Client readClient(FILE *file)
-{
-	Client cli;
-
-	fgets(cli.nom, 20, file);
-    cli.nom[strlen(cli.nom)-1] = '\0'; //nom
-
-	fgets(cli.prenom, 20, file);
-    cli.prenom[strlen(cli.prenom)-1] = '\0'; //prenom
-
-	fgets(cli.adresse, 50, file);
-    cli.adresse[strlen(cli.adresse)-1] = '\0'; //adresse
-
-	fgets(cli.ville, 20, file);
-    cli.ville[strlen(cli.ville)-1] = '\0'; //ville
-
-	fscanf(file, "%d%*c", &(cli.codeP)); //code postal
-    fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
-
-	cli.paye = true;
-    cli.retard = false;
-    cli.lEmpr = NULL;
-	return cli;
-}
 
 
 Client ** loadClient(int *nbmax)
@@ -71,46 +47,30 @@ Client ** loadClient(int *nbmax)
     return tCli; //return nb of client
 }
 
-void rightShift(Client **tCli, int nbmax, int n)
+Client readClient(FILE *file)
 {
-    int i;
-    for (i=nbmax; i > n; i--)
-    {
-        tCli[i] = tCli[i-1];
-    }
+	Client cli;
+
+	fgets(cli.nom, 20, file);
+    cli.nom[strlen(cli.nom)-1] = '\0'; //nom
+
+	fgets(cli.prenom, 20, file);
+    cli.prenom[strlen(cli.prenom)-1] = '\0'; //prenom
+
+	fgets(cli.adresse, 50, file);
+    cli.adresse[strlen(cli.adresse)-1] = '\0'; //adresse
+
+	fgets(cli.ville, 20, file);
+    cli.ville[strlen(cli.ville)-1] = '\0'; //ville
+
+	fscanf(file, "%d%*c", &(cli.codeP)); //code postal
+    fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
+
+	cli.paye = true;
+    cli.retard = false;
+    cli.lEmpr = NULL;
+	return cli;
 }
-
-int cmpNomPrenom(Client c1, Client c2)
-{
-    int j;
-    char sub1[20], sub2[20], sub3[20], sub4[20];
-    strcpy(sub1, c1.nom);
-    strcpy(sub2, c1.prenom);
-    strcpy(sub3, c2.nom);
-    strcpy(sub4, c2.prenom);
-
-    for (j = 0 ; j<21 ; j++){
-        sub1[j]=tolower(sub1[j]);
-        sub2[j]=tolower(sub2[j]);
-        sub3[j]=tolower(sub3[j]);
-        sub4[j]=tolower(sub4[j]);
-    }
-    if (strcmp(c1.nom, c2.nom) > 0)
-        return 1;
-    else if(strcmp(c1.nom, c2.nom) < 0)
-        return -1;
-
-    //IF NAME ARE THE SAME
-    else if (strcmp(c1.prenom, c2.prenom) > 0)
-        return 1;
-    else if(strcmp(c1.prenom, c2.prenom) < 0)
-        return -1;
-    else //if name & surname are equal
-        return 0;
-
-}
-
-
 
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS 
 {
@@ -139,26 +99,6 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     
     return inf;
 }
-
-void saveClient(Client **tClient, int nb)
-{
-    FILE *fe;
-    int i;
-    fe=fopen("client.don", "w");
-    if(fe == NULL){
-        printf("Erreur ouverture fichier\n");
-        exit(1);
-    }
-    fprintf(fe, "%d\n", nb);                         
-    for(i=0; i < nb; i++)
-    {
-        fprintf(fe,"%s\n%s\n%s\n%s\n%d\n%d/%d/%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP, tClient[i]->dIns.jour, tClient[i]->dIns.mois, tClient[i]->dIns.an);
-    }
-    fclose(fe);
-}
-
-
-
 
 Client ** newClient(Client **tCli, int *nb) 
 {
@@ -208,6 +148,52 @@ Client ** newClient(Client **tCli, int *nb)
     return tCli;
 }
 
+
+void rightShift(Client **tCli, int nbmax, int n)
+{
+    int i;
+    for (i=nbmax; i > n; i--)
+    {
+        tCli[i] = tCli[i-1];
+    }
+}
+
+void UpdateGlobale (Client **tCli, int nb)
+{
+    char nom[20], prenom[20], rep;
+    int ind;
+    bool t;
+    printf("Nom : \n");
+    scanf("%s%*c", nom);
+    printf("Prenom : \n");
+    scanf("%s%*c", prenom);
+
+    ind = findCli(tCli, nb, nom, prenom, &t);
+
+    printf("Voulez vous resouscrire à notre offre ? (o/n)\n");
+    scanf("%c%*c", &rep);
+    while (rep != 'o'|| rep != 'O'|| rep != 'n'|| rep != 'N'){
+        printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
+        scanf("%c%*c", &rep);
+    }
+
+    if (rep == 'O'|| rep == 'o')
+    {
+        newSouscription(tCli, nb, ind);
+        printf("Done! Merci de votre fidélité!\n");
+    }
+    
+    printf("Voulez vous modifier vos données personelles ? (o/n)\n");
+    scanf("%c%*c", &rep);
+    while (rep != 'o' || rep != 'O'|| rep != 'n'|| rep != 'N'){
+        printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
+        scanf("%c%*c", &rep);
+    }
+
+    if (rep == 'O' || rep == 'o')
+        updateCli(tCli[ind]);
+}
+
 void updateCli(Client *cli)
 {
     char ans;
@@ -249,20 +235,20 @@ void updateCli(Client *cli)
         scanf("%s", cli->ville);
     }
 
-	printf("Update ville ? (o/n)\n");
-	scanf("%*c%c", &ans);
-	if (ans == 'o' || ans == 'O')
-	{
-	   printf("Nouvelle ville: \n");
-	   scanf("%s", cli->ville);
-	}
+    printf("Update ville ? (o/n)\n");
+    scanf("%*c%c", &ans);
+    if (ans == 'o' || ans == 'O')
+    {
+       printf("Nouvelle ville: \n");
+       scanf("%s", cli->ville);
+    }
 }
 
-void leftShift(Client **tCli, int nb, int n) 
+void newSouscription(Client **tCli, int nb, int ind)
 {
-    int i;
-    for (i = n; i < nb; i++)
-        tCli[i] = tCli[i+1];
+    tCli[ind]->dIns.an+=1;
+    if (tCli[ind]->paye==0)
+        tCli[ind]->paye=1;
 }
 
 void delClient(Client **tCli, int *nb)
@@ -291,33 +277,82 @@ void delClient(Client **tCli, int *nb)
     tCli = tmp;
 }
 
-
-
-lEmprunt insEmpr(Client cli, Emprunt emprunt)
+void leftShift(Client **tCli, int nb, int n) 
 {
-    MaillonE *m;
-    m = (MaillonE *)malloc(sizeof(MaillonE));
-    if (m == NULL)
-    {
-        printf("error malloc maillon emprunt\n");
+    int i;
+    for (i = n; i < nb; i++)
+        tCli[i] = tCli[i+1];
+}
+
+void saveClient(Client **tClient, int nb)
+{
+    FILE *fe;
+    int i;
+    fe=fopen("client.don", "w");
+    if(fe == NULL){
+        printf("Erreur ouverture fichier\n");
         exit(1);
     }
-
-    m->empr = emprunt;
-    m->nxt = cli.lEmpr;
-    return m;
-}
-
-int nbEmpr(Client cli)
-{
-    int nb = 0;
-    while (cli.lEmpr != NULL)
+    fprintf(fe, "%d\n", nb);                         
+    for(i=0; i < nb; i++)
     {
-        cli.lEmpr = cli.lEmpr->nxt;
-        nb++;
+        fprintf(fe,"%s\n%s\n%s\n%s\n%d\n%d/%d/%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP, tClient[i]->dIns.jour, tClient[i]->dIns.mois, tClient[i]->dIns.an);
     }
-    return nb;
+    fclose(fe);
 }
+
+int cmpNomPrenom(Client c1, Client c2)
+{
+    int j;
+    char sub1[20], sub2[20], sub3[20], sub4[20];
+    strcpy(sub1, c1.nom);
+    strcpy(sub2, c1.prenom);
+    strcpy(sub3, c2.nom);
+    strcpy(sub4, c2.prenom);
+
+    for (j = 0 ; j<21 ; j++){
+        sub1[j]=tolower(sub1[j]);
+        sub2[j]=tolower(sub2[j]);
+        sub3[j]=tolower(sub3[j]);
+        sub4[j]=tolower(sub4[j]);
+    }
+    if (strcmp(c1.nom, c2.nom) > 0)
+        return 1;
+    else if(strcmp(c1.nom, c2.nom) < 0)
+        return -1;
+
+    //IF NAME ARE THE SAME
+    else if (strcmp(c1.prenom, c2.prenom) > 0)
+        return 1;
+    else if(strcmp(c1.prenom, c2.prenom) < 0)
+        return -1;
+    else //if name & surname are equal
+        return 0;
+
+}
+
+/*void mailToClient(Client **tCli, int nb) //TODO add email au client
+{  
+    int i;
+
+    for (i=0; i<nb; i++){
+        if (tCli[i]->paye == false)
+            system("mailx -s \'Suscribe\' \'FROM: Gabin.salabert@laposte.net\'" + tCli[i]->email  + " < echo \'Votre inscription a expiré, vous devez payer à nouveau. Cordialement.\'");
+    } 
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -367,7 +402,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
             printf("game not found lol\n");
             return;
         }
-        
+
         strcpy(empr.jeu.nom, game);
         empr.jeu.nbdisp = tJeu[whJ]->nbdisp;
         empr.jeu.nbtot= tJeu[whJ]->nbtot;
@@ -388,6 +423,58 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
         fscanf(fe, "%d\n", &ret);
 
     }
+}
+
+void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc) 
+{
+    Emprunt empr;
+    bool t;
+    int whC, whJ;
+
+    whC = inputFindCli(tCli, nbc);
+    whJ = inputFindJeu(tJeu, nbj);
+    if (whC == -1 || whJ == -1)
+    {
+        printf("Opération annulée");
+        return;
+    }
+
+
+    if (tJeu[whJ]->nbdisp == 0) //on regarde si le jeu est disponible
+    {
+        printf("Ce jeu n'est plus disponible\n");
+        return;
+    }
+    //on créé l'emprunt
+    strcpy(empr.jeu.nom, tJeu[whJ]->nom);
+    
+    empr.date = getDate();
+    empr.retard = 0;
+    if (nbEmpr(*tCli[whC]) == 3) //on verifie si le client a moins de 3 emprunts en cours
+    {
+        printf("Vous ne pouvez plus emprunter\n");
+        return;
+    }
+
+    tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr); //on insere l'emprunt
+    tJeu[whJ]->nbdisp -= 1; //ou enleve un exemplaire disponible du jeu
+
+    printf("%s %s: %d emprunts\n", tCli[whC]->nom, tCli[whC]->prenom, nbEmpr(*tCli[whC]));
+}
+
+lEmprunt insEmpr(Client cli, Emprunt emprunt)
+{
+    MaillonE *m;
+    m = (MaillonE *)malloc(sizeof(MaillonE));
+    if (m == NULL)
+    {
+        printf("error malloc maillon emprunt\n");
+        exit(1);
+    }
+
+    m->empr = emprunt;
+    m->nxt = cli.lEmpr;
+    return m;
 }
 
 lEmprunt supEmprtete(lEmprunt l)
@@ -434,48 +521,118 @@ void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
     printf("You didn't rent this game\n");
 }
 
-void newSouscription(Client **tCli, int nb, int ind)
+void saveEmprunt(Client **tCli, int nb)
 {
-    tCli[ind]->dIns.an+=1;
-    if (tCli[ind]->paye==0)
-        tCli[ind]->paye=1;
-}
+    int i;
+    FILE *fe;
 
-void UpdateGlobale (Client **tCli, int nb)
-{
-    char nom[20], prenom[20], rep;
-    int ind;
-    bool t;
-    printf("Nom : \n");
-    scanf("%s%*c", nom);
-    printf("Prenom : \n");
-    scanf("%s%*c", prenom);
+    fe=fopen("emprunts.don", "w");
+    if(fe == NULL){
+        printf("Erreur ouverture fichier\n");
+        exit(1);
+    }                          
 
-    ind = findCli(tCli, nb, nom, prenom, &t);
-
-    printf("Voulez vous resouscrire à notre offre ? (o/n)\n");
-    scanf("%c%*c", &rep);
-    while (rep != 'o'|| rep != 'O'|| rep != 'n'|| rep != 'N'){
-        printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
-        scanf("%c%*c", &rep);
-    }
-
-    if (rep == 'O'|| rep == 'o')
+    for (i = 0; i < nb; i++)
     {
-        newSouscription(tCli, nb, ind);
-        printf("Done! Merci de votre fidélité!\n");
+        if (tCli[i]->lEmpr != NULL) //if user has emprunts
+        {
+            while (tCli[i]->lEmpr != NULL)
+            {
+                fprintf(fe, "%s\n%s\n%d/%d/%d\n%s\n%d\n", 
+                        tCli[i]->nom, tCli[i]->prenom, 
+                        tCli[i]->lEmpr->empr.date.jour, tCli[i]->lEmpr->empr.date.mois, tCli[i]->lEmpr->empr.date.an,
+                        tCli[i]->lEmpr->empr.jeu.nom, 
+                        tCli[i]->lEmpr->empr.retard);
+                        tCli[i]->lEmpr = tCli[i]->lEmpr->nxt;
+            }
+        }
     }
-    
-    printf("Voulez vous modifier vos données personelles ? (o/n)\n");
-    scanf("%c%*c", &rep);
-    while (rep != 'o' || rep != 'O'|| rep != 'n'|| rep != 'N'){
-        printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
-        scanf("%c%*c", &rep);
-    }
-
-    if (rep == 'O' || rep == 'o')
-        updateCli(tCli[ind]);
+    fprintf(fe, "\nend");
+    fclose(fe);
 }
+
+int nbEmpr(Client cli)
+{
+    int nb = 0;
+    while (cli.lEmpr != NULL)
+    {
+        cli.lEmpr = cli.lEmpr->nxt;
+        nb++;
+    }
+    return nb;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int inputFindCli(Client **tCli, int nb)
+{
+    char nom[20], prenom[20];
+    bool t = false;
+    int wh = 0;
+    char c;
+
+    while (t == false)
+    {
+        printf("Nom: \n");
+        fgets(nom, 20, stdin);
+        nom[strlen(nom)-1] = '\0';
+
+        printf("Prenom: \n");
+        fgets(prenom, 20, stdin);
+        prenom[strlen(prenom)-1] = '\0';
+        wh = findCli(tCli, nb, nom, prenom, &t);
+
+        if (t == true)
+            return wh;
+
+        printf("Client non-trouvé, voulez-vous réessayer ? (o/n)\n");
+        scanf("%*c%c", &c);
+        if (c == 'n')
+            return -1;
+    }
+    return wh;
+
+}
+
+int inputFindJeu(Jeu **tJeu, int nb)
+{
+    char nom[100];
+    bool t = false;
+    int wh = 0;
+    char c;
+
+    while (t == false)
+    {
+        printf("Nom du jeu: \n");
+        fgets(nom, 100, stdin);
+        nom[strlen(nom)-1] = '\0';
+
+        wh = findJeu(tJeu, nb, nom, &t);
+        if (t == true)
+            return wh;
+
+        printf("Jeu non-trouvé, voulez-vous réessayer ? (o/n)\n");
+        scanf("%*c%c", &c);
+        if (c == 'n')
+            return -1;
+    }
+    return wh;
+}
+
 
 /*Client InputNewCliAndRetry (Client cli, int nb)
 {
@@ -590,70 +747,3 @@ void UpdateGlobale (Client **tCli, int nb)
     cli.dIns = {system("date +%d"), system("date +%m"), system("date +%Y")};
     return cli;
 }*/
-
-
-/*void mailToClient(Client **tCli, int nb) //TODO add email au client
-{  
-    int i;
-
-    for (i=0; i<nb; i++){
-        if (tCli[i]->paye == false)
-            system("mailx -s \'Suscribe\' \'FROM: Gabin.salabert@laposte.net\'" + tCli[i]->email  + " < echo \'Votre inscription a expiré, vous devez payer à nouveau. Cordialement.\'");
-    } 
-}*/
-
-
-int inputFindCli(Client **tCli, int nb)
-{
-    char nom[20], prenom[20];
-    bool t = false;
-    int wh = 0;
-    char c;
-
-    while (t == false)
-    {
-        printf("Nom: \n");
-        fgets(nom, 20, stdin);
-        nom[strlen(nom)-1] = '\0';
-
-        printf("Prenom: \n");
-        fgets(prenom, 20, stdin);
-        prenom[strlen(prenom)-1] = '\0';
-        wh = findCli(tCli, nb, nom, prenom, &t);
-
-        if (t == true)
-            return wh;
-
-        printf("Client non-trouvé, voulez-vous réessayer ? (o/n)\n");
-        scanf("%*c%c", &c);
-        if (c == 'n')
-            return -1;
-    }
-    return wh;
-
-}
-
-int inputFindJeu(Jeu **tJeu, int nb)
-{
-    char nom[100];
-    bool t = false;
-    int wh = 0;
-    char c;
-
-    while (t == false)
-    {
-        printf("Nom du jeu: \n");
-        fgets(nom, 100, stdin);
-        nom[strlen(nom)-1] = '\0';
-
-        wh = findJeu(tJeu, nb, nom, &t);
-        if (t == true)
-            return wh;
-
-        printf("Jeu non-trouvé, voulez-vous réessayer ? (o/n)\n");
-        scanf("%*c%c", &c);
-        if (c == 'n')
-            return -1;
-    }
-    return wh;
-}
