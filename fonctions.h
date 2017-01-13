@@ -25,8 +25,7 @@ typedef struct {
 
 
 void printMenu(int *choix); // Done
-void Menu (Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba); // Done
-
+void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *nba);
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
 
@@ -34,11 +33,14 @@ void saveAft(Afternoon tAft[], int nb); //Done
 
 Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc); //Done
 Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb); //Done
+Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj);
+
+
 void regForAfternoon(Afternoon *tAft, int nba, Client **tCli, int nbc); //Done
 liCli insCliAft(Client cli, Afternoon aft); //Done
 
 int subDate(Date d1, Date d2); // Done
-void checkTime(Client **tCli, int nb); //TODO Fix maybe
+Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba);
 
 
 int InterfGraphique(void);

@@ -32,13 +32,13 @@ void printMenu (int *choix)
 	scanf("%d", choix);
 }
 
-void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
+void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *nba)
 {
 	int choix;
     char tmp;
 	while(1)
 	{  
-        system("clear");
+        //system("clear");
         printMenu(&choix);
 
 		switch(choix)
@@ -47,7 +47,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\nVous avez choisi d'enregister un nouveau membre.\n");
                 tmp = getchar();
                 printf("\n");
-                tCli = newClient(tCli, &nbc);
+                tCli = newClient(tCli, nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -55,7 +55,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
              	printf("\nVous avez choisi de supprimer un membre.\n");
                 tmp = getchar();
                 printf("\n");
-                delClient(tCli, &nbc);
+                delClient(tCli, nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -63,7 +63,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\nVous avez choisi de modifier un membre.\n");
                 tmp = getchar();
                 printf("\n");
-                UpdateGlobale(tCli, nbc);
+                UpdateGlobale(tCli, *nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -71,7 +71,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\nVous avez choisi de faire un nouvel emprunt.\n");
                 tmp = getchar();
                 printf("\n");
-                newEmprunt(tJeu, nbj, tCli, nbc);
+                newEmprunt(tJeu, *nbj, tCli, *nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;   
@@ -79,7 +79,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\nVous avez choisi de rendre un jeu.\n");
                 tmp = getchar();
                 printf("\n");
-                delEmpr(tCli, nbc, tJeu, nbj);
+                delEmpr(tCli, *nbc, tJeu, *nbj);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;   
@@ -87,7 +87,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\nVous avez choisi de créer un après midi thématique.\n");
                 tmp = getchar();
                 printf("\n");
-                tAft=newAfternoon(tAft, &nba, tJeu, nbj);
+                tAft=newAfternoon(tAft, nba, tJeu, *nbj);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -95,7 +95,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\nVous avez choisi d'inscrire un client à un après midi thématique.\n");
                 tmp = getchar();
                 printf("\n");
-                regForAfternoon(tAft, nba, tCli, nbc);
+                regForAfternoon(tAft, *nba, tCli, *nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -151,13 +151,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
     }
 }
 
-
-
-
-int subDate(Date d1, Date d2)
-{
-    return abs(365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour);
-}
 
 
 Jeu readJeu(FILE *fe)
@@ -380,6 +373,40 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
 }
 
 
+Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj)
+{
+    Afternoon *tAft;
+    int i, j;
+    bool t;
+
+    for (i=0; i < *nba; i++)
+    {
+        if (otAft[i].jeu.nom == tJeu[wh]->nom)
+            break;
+    }
+
+    for (j = i; j < *nba-1; j++)
+    {
+        otAft[j] = otAft[j+1];
+    }
+
+    tAft = (Afternoon *)realloc(otAft, (*nba-1)*sizeof(Afternoon));
+    if (tAft == NULL && *nba-1 != 0)
+    {
+        printf("malloc\n");
+        exit(1);
+    }
+
+    *nba = *nba -1;
+    return tAft;
+}
+
+
+
+
+
+
+
 liCli insCliAft(Client cli, Afternoon aft)
 {
     MaillonC *m;
@@ -413,7 +440,11 @@ void saveAft(Afternoon tAft[], int nb)
     }                          
     
     fprintf(fe, "%d\n", nb);
-
+    if (nb==0)
+    {
+        fclose(fe);
+        return;
+    }
     for (i = 0; i < nb; i++)
     {
         fprintf(fe, "%s\n%d/%d/%d\n%d %d\n", tAft[i].jeu.nom, //header for the afternoon
@@ -434,11 +465,11 @@ void saveAft(Afternoon tAft[], int nb)
 }
 
 
-void checkTime(Client **tCli, int nb)
+Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba)
 {
     lEmprunt tmp;
-    int i;
-
+    int i, tmpA;
+    Afternoon *ntAft;
     Date d = getDate();
 
     for (i=0; i < nb; i++) //for each client
@@ -460,8 +491,31 @@ void checkTime(Client **tCli, int nb)
         if (subDate(d, tCli[i]->dIns) > 365) //if client outdated
             tCli[i]->paye = false; //he needs to pay again
     }
+
+    for (i = 0; i < *nba; i++)
+    {   
+        if (subDate(d, tAft[i].date) < 0) //if afternoon has passed
+        {   
+            printf("deleting..\n");
+            ntAft = delAfternoon(tAft, i, nba, tJeu, nbj);
+            i--;
+        }
+    }
+
+    if (nba == 0)
+        return tAft;
+
+    return ntAft;
 }
 
+
+
+
+
+int subDate(Date d1, Date d2) //return d1 to d2 (in days)
+{
+    return -(365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour);
+}
 
 
 char * CreatePrompt (void)

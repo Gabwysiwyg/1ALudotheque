@@ -21,18 +21,20 @@ int main (void)
     tJeu = loadGameList (&nbj);
     loadEmprunt(tCli, nbc, tJeu, nbj);
     tAft = loadAfternoon(&nba, tCli, nbc);
-
     //InterfGraphique();
     
-    Menu(tCli, nbc, tJeu, nbj, tAft, nba);
+    Menu(tCli, &nbc, tJeu, &nbj, tAft, &nba);
 
+    tAft = checkTime(tCli, nbc, tJeu, nbj, tAft, &nba);
+    
     saveClient(tCli, nbc);
     saveEmprunt(tCli, nbc);
     saveAft(tAft, nba);
 
-    free(tCli);
+    //free(tAft); //fix TODO
     free(tJeu);
-    free(tAft);
+    free(tCli);
+
     return 0;
     
 }
