@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <regex.h>
+#include <math.h>
 #include "client.h"
 
 
@@ -82,7 +83,7 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
 
     *t = false;
     int inf = 0, sup = nb-1, m;
-    while (inf <= sup)
+    while (inf <= sup && *t == false)
     {
         m = (sup+inf)/2;
         if (cmpNomPrenom(cli, *tCli[m]) == 0)
@@ -139,7 +140,7 @@ Client ** newClient(Client **tCli, int *nb)
             printf("Mauvaise saisie, update data ? (o/n)\n");
             scanf("%c%*c", &rep);
         }
-        if (rep == 'y' || rep == 'Y')
+        if (rep == 'o' || rep == 'O')
             updateCli(tCli[wh]);
 
         return tCli;
@@ -162,7 +163,8 @@ Client ** newClient(Client **tCli, int *nb)
     match = false;
     while (match == false)
     {
-        fscanf(fe, "%d", cli.codeP);
+        printf("Code postal ?\n");
+        scanf("%d", &(cli.codeP));
         if (cli.codeP >= 1000 && cli.codeP <= 98000)
             match = true;
         else
@@ -373,29 +375,81 @@ void saveClient(Client **tClient, int nb)
 
 int cmpNomPrenom(Client c1, Client c2)
 {
-    int j;
-    char sub1[20], sub2[20], sub3[20], sub4[20];
+    int i, j, cpt=0, cpt2=0;
+    char sub1[20], sub2[20], sub3[20], sub4[20], ans;
     strcpy(sub1, c1.nom);
     strcpy(sub2, c1.prenom);
     strcpy(sub3, c2.nom);
     strcpy(sub4, c2.prenom);
 
     for (j = 0 ; j<21 ; j++){
-        sub1[j]=tolower(sub1[j]);
-        sub2[j]=tolower(sub2[j]);
-        sub3[j]=tolower(sub3[j]);
-        sub4[j]=tolower(sub4[j]);
+        sub1[j]=toupper(sub1[j]);
+        sub2[j]=toupper(sub2[j]);
+        sub3[j]=toupper(sub3[j]);
+        sub4[j]=toupper(sub4[j]);
     }
-    if (strcmp(c1.nom, c2.nom) > 0)
+
+    for (i=0; i<20; i++){
+        if (sub1[i] == '\0' || sub3[i] == '\0')
+            break;
+        else if (sub1[i] == sub3[i])
+                cpt++;
+    }
+
+    if (strcmp(sub1, sub3) > 0 && cpt >= 3){
+        printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
+        scanf("%c%*c", &ans);
+        if (ans == 'o' || ans == 'O')
+            return 0;
+        else
+            return 1;
+    }
+        
+    else if(strcmp(sub1, sub3) < 0 && cpt >= 3){
+        printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
+        scanf("%c%*c", &ans);   
+        if (ans == 'o' || ans == 'O')
+            return 0;
+        else
+            return -1;
+    }
+
+    else if (strcmp(sub1, sub3) > 0)
         return 1;
-    else if(strcmp(c1.nom, c2.nom) < 0)
+
+    else if (strcmp(sub1, sub3) < 0)
         return -1;
 
-    //IF NAME ARE THE SAME
-    else if (strcmp(c1.prenom, c2.prenom) > 0)
+
+    for (i=0; i<20; i++){
+        if (sub2[i] == sub4[i])
+            cpt++;
+    }
+
+    if (strcmp(sub2, sub4) > 0 && cpt >= 2){
+        printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
+        scanf("%c%*c", &ans);
+        if (ans == 'o' || ans == 'O')
+            return 0;
+        else
+            return 1;
+    }
+
+    else if(strcmp(sub2, sub4) < 0 && cpt >= 3){
+        printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
+        scanf("%c%*c", &ans);
+        if (ans == 'o' || ans == 'O')
+            return 0;
+        else
+            return -1;
+    }
+
+    else if (strcmp(sub2, sub4) > 0)
         return 1;
-    else if(strcmp(c1.prenom, c2.prenom) < 0)
+
+    else if (strcmp(sub2, sub4) < 0)
         return -1;
+
     else //if name & surname are equal
         return 0;
 
@@ -410,17 +464,6 @@ int cmpNomPrenom(Client c1, Client c2)
             system("mailx -s \'Suscribe\' \'FROM: Gabin.salabert@laposte.net\'" + tCli[i]->email  + " < echo \'Votre inscription a expiré, vous devez payer à nouveau. Cordialement.\'");
     } 
 }*/
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -479,7 +522,6 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
         empr.date = d;
         empr.retard = ret;
         tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr);
-        printf("%s %s: %d emprunts\n",  nom, prenom, nbEmpr(*tCli[whC]));
 
         fgets(nom, 20, fe);
         nom[strlen(nom)-1] = '\0';
