@@ -634,6 +634,19 @@ int inputFindJeu(Jeu **tJeu, int nb)
 }
 
 
+Date getDate()
+{
+    FILE *fe;
+    Date d;
+    system("date +%d-%m-%Y > date.don");
+
+    fe = fopen("date.don", "r");
+    if (fe == NULL)
+        exit(1);
+    fscanf(fe, "%d-%d-%d", &(d.jour), &(d.mois), &(d.an));
+    return d;
+}
+
 /*Client InputNewCliAndRetry (Client cli, int nb)
 {
     regex_t expr;
@@ -747,3 +760,5 @@ int inputFindJeu(Jeu **tJeu, int nb)
     cli.dIns = {system("date +%d"), system("date +%m"), system("date +%Y")};
     return cli;
 }*/
+
+

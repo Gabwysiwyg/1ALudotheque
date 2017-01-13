@@ -40,7 +40,6 @@ liCli insCliAft(Client cli, Afternoon aft); //Done
 int subDate(Date d1, Date d2); // Done
 void checkTime(Client **tCli, int nb); //TODO Fix maybe
 
-Date getDate(); //Done
 
 int InterfGraphique(void);
 

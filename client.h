@@ -46,7 +46,7 @@ Client readClient(FILE *file); //read client info in file // Done
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t); //DICHOTOMIQUE //Done
 Client ** newClient(Client **tCli, int *nb);
 void rightShift(Client **tCli, int nbmax, int n); //Done
-void UpdateGlobale (Client **tCLi, int nb); //Done
+void UpdateGlobale (Client **tCli, int nb); //Done
 void updateCli(Client *cli); // Done
 void newSouscription(Client **tCli, int nb, int ind); //Done
 void delClient(Client **tCli, int *nb); //Done
@@ -66,6 +66,8 @@ void saveEmprunt(Client **tCli, int nb); //Done
 int nbEmpr(Client cli); //Done
 
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t);
+
+Date getDate(); //Done
 
 int inputFindCli(Client **tCli, int nb);
 int inputFindJeu(Jeu **tJeu, int nb);

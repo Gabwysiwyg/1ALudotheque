@@ -18,13 +18,15 @@ void printMenu (int *choix)
 	printf("\n");
 	printf("||||||||| 1 : Enregistrer un nouveau membre    |||||||||\n");
 	printf("||||||||| 2 : Supprimer un membre              |||||||||\n");
-	printf("||||||||| 3 : Enregistrer un emprunt           |||||||||\n");
-	printf("||||||||| 4 : Créer une après-midi thématique  |||||||||\n");
-	printf("||||||||| 5 : Enregistrer un membre à une a.p  |||||||||\n");
-	printf("||||||||| 6 : Afficher liste des jeux          |||||||||\n");
-	printf("||||||||| 7 : Afficher liste des participants  |||||||||\n");
-	printf("||||||||| 8 : Afficher liste des emprunts      |||||||||\n");
-	printf("||||||||| 9 : Quitter                          |||||||||\n");
+    printf("||||||||| 3 : Modifier un membre               |||||||||\n");
+    printf("||||||||| 4 : Enregistrer un emprunt           |||||||||\n");
+    printf("||||||||| 5 : Rendre un jeu                    |||||||||\n");
+    printf("||||||||| 6 : Créer une après-midi thématique  |||||||||\n");
+	printf("||||||||| 7 : Enregistrer un membre à une a.p  |||||||||\n");
+	printf("||||||||| 8 : Afficher liste des jeux          |||||||||\n");
+	printf("||||||||| 9 : Afficher liste des participants  |||||||||\n");
+	printf("||||||||| 10 : Afficher liste des emprunts     |||||||||\n");
+	printf("||||||||| 11 : Quitter                         |||||||||\n");
 	printf("\n");
 	printf("Veuillez faire votre choix :\t");
 	scanf("%d", choix);
@@ -36,13 +38,8 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
     char tmp;
 	while(1)
 	{  
-        //system("clear");
+        system("clear");
         printMenu(&choix);
-        while(choix>9 || choix<1)
-        {
-            printf("Mauvaise saisie, veuille réessayer s'il vous plait.\n");
-            printMenu(&choix);
-        }
 
 		switch(choix)
     	{
@@ -63,6 +60,14 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("C'est fait, merci!\n");
                 break;
             case 3:
+                printf("\nVous avez choisi de modifier un membre.\n");
+                tmp = getchar();
+                printf("\n");
+                UpdateGlobale(tCli, nbc);
+                printf("\n");
+                printf("C'est fait, merci!\n");
+                break;
+            case 4:
                 printf("\nVous avez choisi de faire un nouvel emprunt.\n");
                 tmp = getchar();
                 printf("\n");
@@ -70,7 +75,15 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;   
-            case 4:
+            case 5:
+                printf("\nVous avez choisi de rendre un jeu.\n");
+                tmp = getchar();
+                printf("\n");
+                delEmpr(tCli, nbc, tJeu, nbj);
+                printf("\n");
+                printf("C'est fait, merci!\n");
+                break;   
+            case 6:
                 printf("\nVous avez choisi de créer un après midi thématique.\n");
                 tmp = getchar();
                 printf("\n");
@@ -78,7 +91,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
-            case 5:
+            case 7:
                 printf("\nVous avez choisi d'inscrire un client à un après midi thématique.\n");
                 tmp = getchar();
                 printf("\n");
@@ -86,50 +99,55 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
-            case 6:
-                printf("\nYou chose to edit the game list.\n");
+            case 8:
+                printf("\nAffichage...\n");
                 tmp = getchar();
                 printf("\n");
-
+                //TODO
                 printf("\n");
                 printf("Et voila le travail : \n");
                 break;
-            case 7:
-                printf("\nYou chose to edit the list of afternoons' members.\n");
+            case 9:
+                printf("\nAffichage..\n");
                 tmp = getchar();
                 printf("\n");
 
                 printf("\n");
                 printf("Et voila le travail : \n");
                 break; 
-            case 8:
-                printf("\nYou chose to edit borrowers list.\n");
+            case 10:
+                printf("\nAffichage..\n");
                 tmp = getchar();
                 printf("\n");
 
                 printf("\n");
                 printf("Et voila le travail : \n");
                 break;
-            case 9:
+            case 11:
                 printf("\nVous avez choisi de quitter.\n");
                 printf("Au revoir!\n");
                 printf("\n");
                 return; 
             default:
+                tmp = getchar();
                 printf("Mauvaise saisie, veuille réessayer s'il vous plait.\n");
+                choix = -1;
+                sleep(1);
                 break; 
         }
-        
-        choix = 0;
-        printf("\nDo you want to realize another task ? (y/n)\n");
-        scanf("%c%*c", &tmp);
-        if (tmp == 'n' || tmp =='N')
+
+        if(choix !=-1)
         {
-            printf("Okay, quitting\n");
-            return;
+            choix = 0;
+            printf("\nDo you want to realize another task ? (y/n)\n");
+            scanf("%c%*c", &tmp);
+            if (tmp == 'n' || tmp =='N')
+            {
+                printf("Okay, quitting\n");
+                return;
+            }
         }
-        else
-            Menu(tCli, nbc, tJeu, nbj, tAft, nba);
+        choix = 0;
     }
 }
 
@@ -444,18 +462,7 @@ void checkTime(Client **tCli, int nb)
     }
 }
 
-Date getDate()
-{
-    FILE *fe;
-    Date d;
-    system("date +%d-%m-%Y > date.don");
 
-    fe = fopen("date.don", "r");
-    if (fe == NULL)
-        exit(1);
-    fscanf(fe, "%d-%d-%d", &(d.jour), &(d.mois), &(d.an));
-    return d;
-}
 
 char * CreatePrompt (void)
 {
