@@ -169,6 +169,11 @@ Client ** newClient(Client **tCli, int *nb)
             printf("Mauvaise saisie, réessayez\n");
     }
 
+    cli.paye = 1;
+    cli.lEmpr = NULL;
+    cli.retard = 0;
+    cli.dIns = getDate();
+    
     (*nb)++;
 
     tmp = (Client **)realloc(tCli, (*nb)*sizeof(Client *)); //realloc tmp to contain place for new client
