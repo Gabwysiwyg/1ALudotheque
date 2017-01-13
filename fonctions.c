@@ -4,9 +4,9 @@
 #include <ctype.h>
 #include <printf.h>
 #include <math.h>
-#include <SDL2/SDL.h>
+/*#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>*/
 #include "fonctions.h"
 
 
@@ -36,7 +36,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
     char tmp;
 	while(1)
 	{  
-        system("clear");
+        //system("clear");
         printMenu(&choix);
         while(choix>9 || choix<1)
         {
@@ -237,7 +237,7 @@ void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc)
     strcpy(empr.jeu.nom, tJeu[whJ]->nom);
     
     empr.date = getDate();
-
+    empr.retard = 0;
     if (nbEmpr(*tCli[whC]) == 3) //on verifie si le client a moins de 3 emprunts en cours
     {
         printf("Vous ne pouvez plus emprunter\n");
@@ -247,6 +247,7 @@ void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc)
     tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr); //on insere l'emprunt
     tJeu[whJ]->nbdisp -= 1; //ou enleve un exemplaire disponible du jeu
 
+    printf("%s %s: %d emprunts\n", tCli[whC]->nom, tCli[whC]->prenom, nbEmpr(*tCli[whC]));
 }
 
 void saveEmprunt(Client **tCli, int nb)
@@ -259,8 +260,6 @@ void saveEmprunt(Client **tCli, int nb)
         printf("Erreur ouverture fichier\n");
         exit(1);
     }                          
-    
-    fprintf(fe, "%d\n", nb);
 
     for (i = 0; i < nb; i++)
     {
@@ -277,6 +276,7 @@ void saveEmprunt(Client **tCli, int nb)
             }
         }
     }
+    fprintf(fe, "\nend");
     fclose(fe);
 }
 
@@ -585,7 +585,7 @@ void Prompt (int end)
     }
 }
 
-int InterfGraphique(void)
+/*int InterfGraphique(void)
 {
     //Created by Gabin  Salabert on 11/01/2017.
     //Copyright © 2017 Gabin  Salabert. All rights reserved.
@@ -774,7 +774,7 @@ int InterfGraphique(void)
         }
         SDL_Quit();
         return EXIT_SUCCESS;
-    }
+    }*/
 
 
 

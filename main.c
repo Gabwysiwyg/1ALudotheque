@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <SDL2/SDL.h>
+/*#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>*/
 #include "fonctions.h"
 
 //gcc -I/usr/local/include/sdl2 *.c -L/usr/local/lib -lSDL2 -lSDL2_image -lSDL2_ttf -o lol //POUR COMPILER ET APPELER LIB
@@ -22,7 +22,7 @@ int main (void)
     loadEmprunt(tCli, nbc, tJeu, nbj);
     tAft = loadAfternoon(&nba, tCli, nbc);
 
-    InterfGraphique();
+    //InterfGraphique();
     
     Menu(tCli, nbc, tJeu, nbj, tAft, nba);
 
