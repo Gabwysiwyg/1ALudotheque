@@ -103,12 +103,30 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
 Client ** newClient(Client **tCli, int *nb) 
 {
     int wh;
-    bool t;
+    bool t, match = false;
     Client cli;
     char rep;
     Client **tmp;
 
-    //InputNewCliAndRetry(cli, *nb);
+    //email regex: ^[a-zA-Z]*@.*\\..*$
+
+    while (match == false)
+    {
+        printf("Nom: \n");
+        fgets(cli.nom, 20, stdin);
+        cli.nom[strlen(cli.nom)-1] = '\0';
+
+        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.nom);
+    }
+    match = false;
+    while (match == false)
+    {
+        printf("Prenom: \n");
+        fgets(cli.prenom, 20, stdin);
+        cli.prenom[strlen(cli.prenom)-1] = '\0';
+
+        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.prenom);
+    }
 
     wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t);
 
@@ -125,6 +143,30 @@ Client ** newClient(Client **tCli, int *nb)
             updateCli(tCli[wh]);
 
         return tCli;
+    }
+
+    match = false;
+    while (match == false)
+    {
+        printf("Ville: \n");
+        fgets(cli.ville, 20, stdin);
+        cli.ville[strlen(cli.ville)-1] = '\0';
+
+        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.ville);
+    }
+
+    printf("Adresse: \n");
+    fgets(cli.adresse, 50, stdin);
+    cli.adresse[strlen(cli.adresse)-1] = '\0';
+
+    match = false;
+    while (match == false)
+    {
+        fscanf(fe, "%d", cli.codeP);
+        if (cli.codeP >= 1000 && cli.codeP <= 98000)
+            match = true;
+        else
+            printf("Mauvaise saisie, réessayez\n");
     }
 
     (*nb)++;
@@ -146,6 +188,29 @@ Client ** newClient(Client **tCli, int *nb)
     //saveClient(tCli, wh);
 
     return tCli;
+}
+
+bool regexMatch(char *patt, char *str)
+{
+    regex_t pattern;
+    int status;
+
+    if (regcomp(&pattern, patt, REG_EXTENDED) != 0)
+    {
+        printf("couldn't compile regex %s\n", patt);
+        exit(1);
+    }
+
+    status = regexec(&pattern, str, (size_t) 0, NULL, 0);
+    regfree(&pattern);
+
+    if (!status)
+    {
+        return true;
+    }
+        printf("Mauvaise saisie, réessayez.\n");
+    return false;
+
 }
 
 
@@ -646,119 +711,3 @@ Date getDate()
     fscanf(fe, "%d-%d-%d", &(d.jour), &(d.mois), &(d.an));
     return d;
 }
-
-/*Client InputNewCliAndRetry (Client cli, int nb)
-{
-    regex_t expr;
-    int error, ind;
-    bool good = false, t;
-    const char *str_regex = "[:alpha:]";
-    const char *str_regex2 = "![:alnum:]";
-    const char *str_regex3 = "![:digit:]";
-    char nom[20], prenom[20];
-
-    printf("Nom : \n");
-    fgets(cli.nom, 20, stdin);
-    while (good == false)
-    {
-        error = regcomp (&expr, str_regex, REG_NOSUB | REG_EXTENDED); //Check (compile) si l'exp reg est valide.
-        if (error == 0) // Si valide on crée variable pour analyser notre chaîne.
-            int check;
-        check = regexec(&expr, cli.nom, 0, NULL, 0); //Analyse.
-        if (check == NO_NOMATCH) //Critères ne correspondent pas.
-        { 
-            printf("Mauvaise saisie, ceci n'est pas une chaîne de caractère, veuillez réessayer.\n");
-            printf("Nom : \n");
-            fgets(cli.nom, 20, stdin);
-        }
-        else{
-            regfree(&expr); //libération de la mémoire.
-            good = true;
-        }
-    }
-    cli.nom[strlen(cli.nom)-1] = '\0'; 
-    good = false;
-    printf("Prenom : \n");
-    fgets(cli.prenom, 20, stdin);
-    while (good == false)
-    {
-        error = regcomp (&expr, str_regex, REG_NOSUB | REG_EXTENDED); //Check (compile) si l'exp reg est valide.
-        if (error == 0) // Si valide on crée variable pour analyser notre chaîne.
-            int check;
-        check = regexec(&expr, cli.prenom, 0, NULL, 0); //Analyse.
-        if (check == NO_NOMATCH){ //Critères ne correspondent pas.
-            printf("Mauvaise saisie, ceci n'est pas une chaîne de caractère, veuillez réessayer.\n");
-            printf("Prenom : \n");
-            fgets(cli.prenom, 20, stdin);
-        }
-        else{
-            regfree(&expr); //libération de la mémoire.
-            good = true;
-        }
-    }
-    cli.prenom[strlen(cli.prenom)-1] = '\0'; 
-    good = false;
-
-    printf("Adresse: ");
-    fgets(cli.adresse, 50, stdin);
-    while (good == false)
-    {
-        error = regcomp (&expr, str_regex2, REG_NOSUB | REG_EXTENDED); //Check (compile) si l'exp reg est valide.
-        if (error == 0) // Si valide on crée variable pour analyser notre chaîne.
-            int check;
-        check = regexec(&expr, prenom, 0, NULL, 0); //Analyse.
-        if (check == NO_NOMATCH)
-        { //Critères ne correspondent pas.
-            printf("Mauvaise saisie, certains caractères ne sont pas cohérents, veuillez réessayer.\n");
-            printf("Adresse : \n");
-            fgets(cli.adresse, 50, stdin);
-        }
-        else
-        {
-            regfree(&expr); //libération de la mémoire.
-            good = true;
-        }
-    }
-    cli.adresse[strlen(cli.adresse)-1] = '\0'; //adresse
-    good = false;
-
-    printf("Ville: ");
-    fgets(cli.ville, 20, stdin);
-    while (good == false){
-        error = regcomp (&expr, str_regex, REG_NOSUB | REG_EXTENDED); //Check (compile) si l'exp reg est valide.
-        if (error == 0) // Si valide on crée variable pour analyser notre chaîne.
-            int check;
-        check = regexec(&expr, prenom, 0, NULL, 0); //Analyse.
-        if (check == NO_NOMATCH){ //Critères ne correspondent pas.
-            printf("Mauvaise saisie, ceci n'est pas une chaîne de caractère, veuillez réessayer.\n");
-            printf("Ville : \n");
-            fgets(cli.ville, 20, stdin);
-        }
-        else{
-            regfree(&expr); //libération de la mémoire.
-            good = true;
-        }
-    }
-    cli.ville[strlen(cli.ville)-1] = '\0'; //ville
-    good = false;
-
-    printf("Code postal: ");
-    scanf("%d%*c", &(cli.codeP)); //code postal
-    while (good = false)
-    {
-        if (cli.codeP < 0 || cli.codeP > 97999)
-        {
-            printf("Code postal inexistant, veuillez réessayer\n");
-            printf("Code postal: ");
-            scanf("%d%*c", &(cli.codeP));
-        }
-        else
-            good = true;
-    }
-    cli.paye = false;
-    cli.lEmpr = NULL;
-    cli.dIns = {system("date +%d"), system("date +%m"), system("date +%Y")};
-    return cli;
-}*/
-
-

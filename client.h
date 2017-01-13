@@ -45,6 +45,7 @@ Client **loadClient(int *nbmax); //load tCli from file, and sort them while inse
 Client readClient(FILE *file); //read client info in file // Done
 int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t); //DICHOTOMIQUE //Done
 Client ** newClient(Client **tCli, int *nb);
+bool regexMatch(char *patt, char *str);
 void rightShift(Client **tCli, int nbmax, int n); //Done
 void UpdateGlobale (Client **tCli, int nb); //Done
 void updateCli(Client *cli); // Done
