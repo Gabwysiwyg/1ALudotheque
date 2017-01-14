@@ -64,7 +64,7 @@ Client readClient(FILE *file)
 	fgets(cli.ville, 20, file);
     cli.ville[strlen(cli.ville)-1] = '\0'; //ville
 
-	fscanf(file, "%d%*c", &(cli.codeP)); //code postal
+	fscanf(file, "%s%*c", &(cli.codeP)); //code postal
     fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
 
 	cli.paye = true;
@@ -369,7 +369,7 @@ void saveClient(Client **tClient, int nb)
     fprintf(fe, "%d\n", nb);                         
     for(i=0; i < nb; i++)
     {
-        fprintf(fe,"%s\n%s\n%s\n%s\n%d\n%d/%d/%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP, tClient[i]->dIns.jour, tClient[i]->dIns.mois, tClient[i]->dIns.an);
+        fprintf(fe,"%s\n%s\n%s\n%s\n%s\n%d/%d/%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP, tClient[i]->dIns.jour, tClient[i]->dIns.mois, tClient[i]->dIns.an);
     }
     fclose(fe);
 }

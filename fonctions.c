@@ -127,6 +127,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi de quitter.\n");
                 printf("Au revoir!\n");
                 printf("\n");
+                quit(tCli, *nbc, tJeu, *nbj, tAft, nba);
                 return; 
             default:
                 tmp = getchar();
@@ -144,6 +145,8 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
             if (tmp == 'n' || tmp =='N')
             {
                 printf("Okay, quitting\n");
+                quit(tCli, *nbc, tJeu, *nbj, tAft, nba);
+
                 return;
             }
         }
@@ -598,6 +601,21 @@ void Prompt (int end)
         fgets(line, sizeof line, stdin);
         end = strcmp(line, "q") == 0;
     }
+}
+
+
+void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba)
+{
+    tAft = checkTime(tCli, nbc, tJeu, nbj, tAft, nba);
+    
+    saveClient(tCli, nbc);
+    saveEmprunt(tCli, nbc);
+    saveAft(tAft, *nba);
+    saveGameList(tJeu, nbj);
+
+    //free(tAft); //fix TODO
+    free(tJeu);
+    free(tCli);
 }
 
 /*int InterfGraphique(void)

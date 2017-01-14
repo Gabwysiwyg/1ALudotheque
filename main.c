@@ -27,18 +27,6 @@ int main (void)
     
     Menu(tCli, &nbc, tJeu, &nbj, tAft, &nba);
 
-    tAft = checkTime(tCli, nbc, tJeu, nbj, tAft, &nba);
-    
-    saveClient(tCli, nbc);
-    saveEmprunt(tCli, nbc);
-    saveAft(tAft, nba);
-    saveGameList(tJeu, nbj);
-
-    //free(tAft); //fix TODO
-    free(tJeu);
-    free(tCli);
-    free(tJeu);
-
     return 0;
     
 }
