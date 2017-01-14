@@ -23,8 +23,7 @@ typedef struct {
 } Afternoon;
 
 
-
-void printMenu(int *choix); // Done
+int printMenu ();
 void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *nba);
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done

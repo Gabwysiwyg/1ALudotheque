@@ -10,36 +10,54 @@
 #include "fonctions.h"
 
 
+int printMenu()
+{   
+    char choix = 1;
+    char sel[11] = "-          ";
+    int selec = 0;
 
-void printMenu (int *choix)
-{
-	printf("\n");
-	printf("*********                |Menu|                *********\n");
-	printf("\n");
-	printf("||||||||| 1 : Enregistrer un nouveau membre    |||||||||\n");
-	printf("||||||||| 2 : Supprimer un membre              |||||||||\n");
-    printf("||||||||| 3 : Modifier un membre               |||||||||\n");
-    printf("||||||||| 4 : Enregistrer un emprunt           |||||||||\n");
-    printf("||||||||| 5 : Rendre un jeu                    |||||||||\n");
-    printf("||||||||| 6 : Créer une après-midi thématique  |||||||||\n");
-	printf("||||||||| 7 : Enregistrer un membre à une a.p  |||||||||\n");
-	printf("||||||||| 8 : Afficher liste des jeux          |||||||||\n");
-	printf("||||||||| 9 : Afficher liste des participants  |||||||||\n");
-	printf("||||||||| 10 : Afficher liste des emprunts     |||||||||\n");
-	printf("||||||||| 11 : Quitter                         |||||||||\n");
-	printf("\n");
-	printf("Veuillez faire votre choix :\t");
-	scanf("%d", choix);
+    while (choix != 0)
+    {
+        system("clear");
+        
+        printf("\n");
+        printf("*********                |Menu|                *********\n");
+        printf("\n");
+        printf("||||||||| %c1 : Enregistrer un nouveau membre    |||||||||\n", sel[0]);
+        printf("||||||||| %c2 : Supprimer un membre              |||||||||\n", sel[1]);
+        printf("||||||||| %c3 : Modifier un membre               |||||||||\n", sel[2]);
+        printf("||||||||| %c4 : Enregistrer un emprunt           |||||||||\n", sel[3]);
+        printf("||||||||| %c5 : Rendre un jeu                    |||||||||\n", sel[4]);
+        printf("||||||||| %c6 : Créer une après-midi thématique  |||||||||\n", sel[5]);
+        printf("||||||||| %c7 : Enregistrer un membre à une a.p  |||||||||\n", sel[6]);
+        printf("||||||||| %c8 : Afficher liste des jeux          |||||||||\n", sel[7]);
+        printf("||||||||| %c9 : Afficher liste des participants  |||||||||\n", sel[8]);
+        printf("||||||||| %c10 : Afficher liste des emprunts     |||||||||\n", sel[9]);
+        printf("||||||||| %c11 : Quitter                         |||||||||\n", sel[10]);
+        printf("\n");
+        printf("Veuillez faire votre choix :\t");
+	
+    
+        scanf("%d", &choix);
+        
+        if (choix == 2)
+        {
+            sel[selec] = ' ';
+            sel[(selec+1) % 11] = '-';
+            selec++;
+        }
+    }
+    return selec+1;
+
 }
 
 void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *nba)
 {
-	int choix;
+	int choix = 1;
     char tmp;
 	while(1)
 	{  
-        system("clear");
-        printMenu(&choix);
+        choix = printMenu();
 
 		switch(choix)
     	{
