@@ -50,3 +50,5 @@ char * CreatePrompt (void); //Done but not complete
 void Prompt (int end); //Done but not complete
 
 void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba);
+
+void mail(Client cli);

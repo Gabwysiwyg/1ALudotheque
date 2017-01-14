@@ -38,7 +38,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
     char tmp;
 	while(1)
 	{  
-        //system("clear");
+        system("clear");
         printMenu(&choix);
 
 		switch(choix)
@@ -139,9 +139,8 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
 
         if(choix !=-1)
         {
-            choix = 0;
             printf("\nDo you want to realize another task ? (y/n)\n");
-            scanf("%c%*c", &tmp);
+            scanf("%c", &tmp);
             if (tmp == 'n' || tmp =='N')
             {
                 printf("Okay, quitting\n");
@@ -605,7 +604,8 @@ void Prompt (int end)
 
 
 void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba)
-{
+{   
+    int i;
     tAft = checkTime(tCli, nbc, tJeu, nbj, tAft, nba);
     
     saveClient(tCli, nbc);
@@ -613,9 +613,22 @@ void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba
     saveAft(tAft, *nba);
     saveGameList(tJeu, nbj);
 
+    for (i = 0; i < nbc; i++)
+        free(tCli[i]);
+
+    for (i = 0; i < nbj; i++)
+        free(tJeu[i]);
+    
     //free(tAft); //fix TODO
     free(tJeu);
     free(tCli);
+}
+
+
+void mail(Client cli)
+{
+    //system("echo \"Votre abonnement a expiré\" | mail -s \"abonnement ludothèque\" + cli.email)
+    return;
 }
 
 /*int InterfGraphique(void)
