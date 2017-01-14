@@ -64,7 +64,7 @@ Client readClient(FILE *file)
 	fgets(cli.ville, 20, file);
     cli.ville[strlen(cli.ville)-1] = '\0'; //ville
 
-	fscanf(file, "%s%*c", &(cli.codeP)); //code postal
+	fscanf(file, "%s%*c", cli.codeP); //code postal
     fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
 
 	cli.paye = true;

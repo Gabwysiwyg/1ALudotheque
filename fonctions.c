@@ -9,10 +9,9 @@
 #include <SDL2/SDL_ttf.h>*/
 #include "fonctions.h"
 
-
 int printMenu()
 {   
-    char choix = 1;
+    int choix = 1;
     char sel[11] = "-          ";
     int selec = 0;
 
@@ -41,10 +40,27 @@ int printMenu()
         scanf("%d", &choix);
         
         if (choix == 2)
-        {
+        {   
             sel[selec] = ' ';
             sel[(selec+1) % 11] = '-';
             selec++;
+            selec = selec % 11;
+        }
+        else if (choix == 8)
+        {
+            sel[selec] = ' ';
+            if (selec == 0)
+            {
+                sel[10] = '-';
+                selec = 10;
+            }
+            else
+            {
+                sel[selec-1] = '-';
+                selec--;
+            }
+            
+
         }
     }
     return selec+1;
