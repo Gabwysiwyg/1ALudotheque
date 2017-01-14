@@ -32,7 +32,7 @@ typedef struct {
 	char prenom[20];
 	char adresse[50];
 	char ville[20];
-	int codeP;
+	char codeP[6];
 	lEmprunt lEmpr;
 	bool paye; //1 si il a payé
 	Date dIns;
@@ -65,6 +65,7 @@ lEmprunt supEmpr(lEmprunt l, char *nom, bool *t);
 void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj);
 void saveEmprunt(Client **tCli, int nb); //Done
 int nbEmpr(Client cli); //Done
+bool isLate(Client cli);
 
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t);
 

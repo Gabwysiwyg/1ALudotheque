@@ -223,6 +223,24 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
     return inf;
 }
 
+void saveGameList(Jeu **tJeu, int nb)
+{
+    FILE *fe;
+    int i;
+
+    fe = fopen("gamelist.don", "w");
+    if (fe == NULL)
+        exit(1);
+
+    fprintf(fe, "%d\n", nb);
+
+    for (i=0; i < nb-1; i++)
+        fprintf(fe, "%s\n%d %d\n",tJeu[i]->nom, tJeu[i]->nbdisp, tJeu[i]->nbtot);
+    
+    fclose(fe);
+}
+
+
 
 
 

@@ -164,10 +164,11 @@ Client ** newClient(Client **tCli, int *nb)
     while (match == false)
     {
         printf("Code postal ?\n");
-        scanf("%d", &(cli.codeP));
-        if (cli.codeP >= 1000 && cli.codeP <= 98000)
-            match = true;
-        else
+        scanf("%s", cli.codeP);
+
+        match = regexMatch("^[0-9]{5}$", (char *)cli.codeP);
+
+        if (strcmp(cli.codeP, "98000") > 0)
             printf("Mauvaise saisie, réessayez\n");
     }
 
@@ -302,7 +303,7 @@ void updateCli(Client *cli)
     if (ans == 'o' || ans == 'O') //if we change postal code we also change city
     {
         printf("Nouveau code postal: \n");
-        scanf("%s", cli->nom);
+        scanf("%s", cli->codeP);
         printf("Nouvelle ville: \n");
         scanf("%s", cli->ville);
     }
@@ -512,7 +513,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
 
         if (t == false)
         {
-            printf("game not found lol\n");
+            printf("game not found\n");
             return;
         }
 
@@ -521,7 +522,9 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
         empr.jeu.nbtot= tJeu[whJ]->nbtot;
         empr.date = d;
         empr.retard = ret;
+        tCli[whC]->retard = tCli[whC]->retard || ret;
         tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr);
+        tJeu[whJ]->nbdisp--;
 
         fgets(nom, 20, fe);
         nom[strlen(nom)-1] = '\0';
@@ -603,10 +606,10 @@ lEmprunt supEmpr(lEmprunt l, char *nom, bool *t)
     if (l == NULL)
         return l;
     if (strcmp(nom, l->empr.jeu.nom) == 0)
-        {
-            *t = true;
-            return supEmprtete(l);
-        }
+    {   
+        *t = true;
+        return supEmprtete(l);
+    }
     return supEmpr(l->nxt, nom, t);
 }
 
@@ -628,7 +631,11 @@ void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
     t = false;
     tCli[whC]->lEmpr = supEmpr(tCli[whC]->lEmpr, game, &t);
     if (t == true)
+    {   
+        tJeu[whJ]->nbdisp++;
+        tCli[whC]->retard = isLate(*tCli[whC]); //update retard global du client en fonction de ses autres emprunts
         return;
+    }
     
     printf("You didn't rent this game\n");
 }
@@ -674,7 +681,15 @@ int nbEmpr(Client cli)
     return nb;
 }
 
-
+bool isLate(Client cli)
+{
+    while (cli.lEmpr != NULL)
+    {
+        if (cli.lEmpr->empr.retard == 1)
+            return true;
+        cli.lEmpr = cli.lEmpr->nxt;
+    }
+}
 
 
 

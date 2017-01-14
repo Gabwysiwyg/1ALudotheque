@@ -28,7 +28,8 @@ void printMenu(int *choix); // Done
 void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *nba);
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
-
+void saveGameList(Jeu **tJeu, int nb);
+int findJeu(Jeu **tJeu, int nb, char *nom, bool *t); //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 void saveAft(Afternoon tAft[], int nb); //Done
 
 Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc); //Done

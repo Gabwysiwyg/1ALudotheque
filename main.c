@@ -32,10 +32,12 @@ int main (void)
     saveClient(tCli, nbc);
     saveEmprunt(tCli, nbc);
     saveAft(tAft, nba);
+    saveGameList(tJeu, nbj);
 
     //free(tAft); //fix TODO
     free(tJeu);
     free(tCli);
+    free(tJeu);
 
     return 0;
     
