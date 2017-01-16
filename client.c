@@ -295,7 +295,7 @@ void updateCli(Client *cli)
     }
 
     printf("Update adresse ? (o/n)\n");
-    scanf("%*c%c" &ans);
+    scanf("%*c%c", &ans);
     if (ans == 'o' || ans == 'O')
     {
         tmp = getchar();
@@ -436,6 +436,22 @@ int cmpNomPrenom(Client c1, Client c2)
         return 0;
 
 }
+
+void printLateCli(Client **tCli, int nb)
+{
+    int i;
+
+    printf("Les emprenteurs ayant actuellement un retard sont: \n");
+    for (i = 0; i < nb; i++)
+        if (tCli[i]->retard == 1)
+            printf("-%s %s\n", tCli[i]->nom, tCli[i]->prenom);
+
+}
+
+
+
+
+
 
 /*void mailToClient(Client **tCli, int nb) //TODO add email au client
 {  

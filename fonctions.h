@@ -35,6 +35,7 @@ void saveAft(Afternoon tAft[], int nb); //Done
 Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc); //Done
 Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb); //Done
 Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj);
+void printAftReg(Afternoon *tAft, int nba);
 
 
 void regForAfternoon(Afternoon *tAft, int nba, Client **tCli, int nbc); //Done

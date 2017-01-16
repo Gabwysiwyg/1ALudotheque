@@ -134,7 +134,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("C'est fait, merci!\n");
                 break;
             case 8:
-                printf("\nAffichage...\n");
                 tmp = getchar();
                 printf("\n");
                 printGameList(tJeu, nbj);
@@ -142,10 +141,9 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("Et voila le travail : \n");
                 break;
             case 9:
-                printf("\nAffichage..\n");
                 tmp = getchar();
                 printf("\n");
-
+                printAftReg(tAft, nba);
                 printf("\n");
                 printf("Et voila le travail : \n");
                 break; 
@@ -153,7 +151,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\nAffichage..\n");
                 tmp = getchar();
                 printf("\n");
-
+                printLateCli(tCli, nbc);
                 printf("\n");
                 printf("Et voila le travail : \n");
                 break;
@@ -472,6 +470,37 @@ Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj)
 }
 
 
+void printAftReg(Afternoon *tAft, int nba)
+{
+    int choix = -1;
+    int i;
+    char tmp;
+    liCli l;
+    printf("De quel après-midi voulez vous afficher les inscrits ?\n\n");
+    for (i=0; i < nba; i++)
+        printf("%d : %s (%d/%d/%d)\n", i+1, tAft[i].jeu.nom, tAft[i].date.jour, tAft[i].date.mois, tAft[i].date.an);
+
+    while (choix < 1 || choix > nba+1)
+    {
+        printf("\nchoix: ");
+        scanf("%d%*c", &choix);
+    }
+    l = tAft[choix-1].lCli;
+    if (l == NULL)
+    {
+        printf("aucun inscrit\n");
+        return;
+    }
+    printf("\n");
+    while (l != NULL)
+    {
+        printf("- %s %s\n", l->cli.nom, l->cli.prenom);
+        l = l->nxt;
+    }
+    printf("\nEntrée pour quitter\n");
+    tmp = getchar();
+}
+
 
 
 
@@ -568,7 +597,6 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
         if (subDate(d, tAft[i].date) < 0) //if afternoon has passed
         {   
             t = true;
-            printf("deleting..\n");
             ntAft = delAfternoon(tAft, i, nba, tJeu, nbj);
             i--;
         }

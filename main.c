@@ -15,9 +15,10 @@ int main (void)
     Client **tCli;                  
     Jeu **tJeu;
     Afternoon *tAft;
-    int nbc=0, nbj=0, nba=0, endPrompt=0;
+    int nbc=0, nbj=0, nba=0, i;
     bool t;
     
+
 
     tCli = loadClient(&nbc);
     tJeu = loadGameList (&nbj);
@@ -25,6 +26,9 @@ int main (void)
     tAft = loadAfternoon(&nba, tCli, nbc);
     //InterfGraphique();
     
+    for(i=0; i < nbc; i++)
+        if (isLate(*tCli[i]))
+            tCli[i]->retard = 1;
     Menu(tCli, nbc, tJeu, nbj, tAft, nba);
 
     return 0;

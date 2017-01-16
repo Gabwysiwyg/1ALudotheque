@@ -54,6 +54,7 @@ void delClient(Client **tCli, int *nb); //Done
 void leftShift(Client **tCli, int nb, int n); //Done
 void saveClient(Client **tClient, int nb);
 int cmpNomPrenom(Client c1, Client c2); //strcmp with name & surname // Done
+void printLateCli(Client **tCli, int nb);
 void mailToClient(Client **tCli, int nb);
 
 
