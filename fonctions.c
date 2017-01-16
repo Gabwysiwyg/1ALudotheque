@@ -14,6 +14,7 @@ int printMenu()
     int choix = 1;
     char sel[11] = "-          ";
     int selec = 0;
+    Date d = getDate(), d1 = {15, 01, 2015};
 
     while (choix != 0)
     {
@@ -34,9 +35,9 @@ int printMenu()
         printf("||||||||| %c10 : Afficher liste des emprunts     |||||||||\n", sel[9]);
         printf("||||||||| %c11 : Quitter                         |||||||||\n", sel[10]);
         printf("\n");
-        printf("Veuillez faire votre choix :\t");
-	
-    
+        printf("Déplacer le curseur:\t");
+        printf("%d\n", subDate(d, d1));
+
         scanf("%d", &choix);
         
         if (choix == 2)
@@ -67,7 +68,7 @@ int printMenu()
 
 }
 
-void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *nba)
+void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
 {
 	int choix = 1;
     char tmp;
@@ -81,7 +82,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi d'enregister un nouveau membre.\n");
                 tmp = getchar();
                 printf("\n");
-                tCli = newClient(tCli, nbc);
+                tCli = newClient(tCli, &nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -89,7 +90,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
              	printf("\nVous avez choisi de supprimer un membre.\n");
                 tmp = getchar();
                 printf("\n");
-                delClient(tCli, nbc);
+                delClient(tCli, &nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -97,7 +98,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi de modifier un membre.\n");
                 tmp = getchar();
                 printf("\n");
-                UpdateGlobale(tCli, *nbc);
+                UpdateGlobale(tCli, nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -105,7 +106,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi de faire un nouvel emprunt.\n");
                 tmp = getchar();
                 printf("\n");
-                newEmprunt(tJeu, *nbj, tCli, *nbc);
+                newEmprunt(tJeu, nbj, tCli, nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;   
@@ -113,7 +114,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi de rendre un jeu.\n");
                 tmp = getchar();
                 printf("\n");
-                delEmpr(tCli, *nbc, tJeu, *nbj);
+                delEmpr(tCli, nbc, tJeu, nbj);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;   
@@ -121,7 +122,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi de créer un après midi thématique.\n");
                 tmp = getchar();
                 printf("\n");
-                tAft=newAfternoon(tAft, nba, tJeu, *nbj);
+                tAft=newAfternoon(tAft, &nba, tJeu, nbj);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -129,7 +130,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi d'inscrire un client à un après midi thématique.\n");
                 tmp = getchar();
                 printf("\n");
-                regForAfternoon(tAft, *nba, tCli, *nbc);
+                regForAfternoon(tAft, nba, tCli, nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -137,7 +138,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nAffichage...\n");
                 tmp = getchar();
                 printf("\n");
-                //TODO
+                printGameList(tJeu, nbj);
                 printf("\n");
                 printf("Et voila le travail : \n");
                 break;
@@ -161,7 +162,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
                 printf("\nVous avez choisi de quitter.\n");
                 printf("Au revoir!\n");
                 printf("\n");
-                quit(tCli, *nbc, tJeu, *nbj, tAft, nba);
+                quit(tCli, nbc, tJeu, nbj, tAft, &nba);
                 return; 
             default:
                 tmp = getchar();
@@ -178,7 +179,7 @@ void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *n
             if (tmp == 'n' || tmp =='N')
             {
                 printf("Okay, quitting\n");
-                quit(tCli, *nbc, tJeu, *nbj, tAft, nba);
+                quit(tCli, nbc, tJeu, nbj, tAft, &nba);
 
                 return;
             }
@@ -235,26 +236,36 @@ Jeu **loadGameList (int *nb)
 
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 {
-
+    char lNom[100], lGame[100];
     int inf = 0, sup = nb-1, m, i;
-
     
+    for (i=0; i < strlen(nom); i++)
+        lNom[i] = toupper(nom[i]);
+    lNom[i] = '\0';
+
     while (inf <= sup)
     {
         m = (sup+inf)/2;
 
+        strcpy(lGame, tJeu[m]->nom);
 
-        if (strcmp(nom, tJeu[m]->nom) == 0)
+        for (i=0; i < strlen(tJeu[m]->nom); i++)
+            lGame[i] = toupper(tJeu[m]->nom[i]);
+
+        lGame[i] = '\0';
+
+        if (strcmp(lNom, lGame) == 0)
         {
             *t = true;
             return m;
         }
-        if (strcmp(nom, tJeu[m]->nom) < 0)
+        if (strcmp(lNom, lGame) < 0)
             sup = m-1;
         else
             inf = m+1;
 
     }
+
     *t=false;
     return inf;
 }
@@ -277,6 +288,13 @@ void saveGameList(Jeu **tJeu, int nb)
 }
 
 
+void printGameList(Jeu **tJeu, int nb)
+{
+    int i;
+
+    for (i=0; i < 80; i++)
+        printf("%s\n", tJeu[i]->nom);
+}
 
 
 
@@ -542,7 +560,7 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
             }
         }
 
-        if (subDate(d, tCli[i]->dIns) > 365) //if client outdated
+        if (subDate(d, tCli[i]->dIns) < 365) //if client outdated
             tCli[i]->paye = false; //he needs to pay again
     }
 
@@ -572,69 +590,6 @@ int subDate(Date d1, Date d2) //return d1 to d2 (in days)
 }
 
 
-char * CreatePrompt (void)
-{
-    char *invite = NULL;
-    char const *user = getenv("USERNAME"); 
-
-    if (user == NULL)
-    {
-      user = getenv("USER");
-        if (user == NULL)
-         user = "";
-    }
-
-    char const *host = getenv("HOSTNAME");  //Get donnée pour PATH
-    if (host == NULL)
-            host = "";
-
-    char const *aux = getenv("PWD");
-    if (aux == NULL)
-            aux = "";
-    
-    char const *rep = aux + strlen(aux);
-    while (rep >= aux && *rep != '/')
-    {
-        rep--;
-    }            
-    rep++;
-
-    invite = malloc(strlen(user) + strlen(host) + strlen(rep) + 6);
-
-    if (invite != NULL)
-    {
-        strcpy(invite, "[");
-        strcat(invite, user);
-        strcat(invite, "@");
-        strcat(invite, host);
-        strcat(invite, " ");        //Insert data in tab for PATH
-        strcat(invite, rep);
-        strcat(invite, "]");
-        strcat(invite, "$");
-        strcat(invite, " ");
-    }
-    return invite; //Return complete string
-}
-
-
-void Prompt (int end)
-{
-    while (!end)
-    {
-        char *s = CreatePrompt();
-        if (s != NULL)
-        {
-            printf ("%s", s);
-            fflush (stdout);
-            free(s), s = NULL;
-        }
-
-        printf("\n\n\t\tBonjour et bienvenu sur le gestionnaire de Ludothèque, tapez ENTER pour continuer.\n");
-        char line[128]="";
-        fgets(line, sizeof line, stdin);
-        end = strcmp(line, "q") == 0;
-    }
-}
 
 
 void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba)

@@ -24,10 +24,11 @@ typedef struct {
 
 
 int printMenu ();
-void Menu(Client **tCli, int *nbc, Jeu **tJeu, int *nbj, Afternoon *tAft, int *nba);
+void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba);
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
 void saveGameList(Jeu **tJeu, int nb);
+void printGameList(Jeu **tJeu, int nb);
 int findJeu(Jeu **tJeu, int nb, char *nom, bool *t); //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
 void saveAft(Afternoon tAft[], int nb); //Done
 
@@ -44,9 +45,6 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
 
 
 int InterfGraphique(void);
-
-char * CreatePrompt (void); //Done but not complete
-void Prompt (int end); //Done but not complete
 
 void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba);
 

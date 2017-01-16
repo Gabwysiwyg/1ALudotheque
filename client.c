@@ -570,7 +570,11 @@ void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc)
         printf("Vous ne pouvez plus emprunter\n");
         return;
     }
-
+    if (tCli[whC]->paye == 0)
+    {
+        printf("Votre inscription a expirée\n");
+        return;
+    }
     tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr); //on insere l'emprunt
     tJeu[whJ]->nbdisp -= 1; //ou enleve un exemplaire disponible du jeu
 
@@ -602,10 +606,16 @@ lEmprunt supEmprtete(lEmprunt l)
 
 
 lEmprunt supEmpr(lEmprunt l, char *nom, bool *t)
-{
+{ 
+    char tmp[100];
+    int i;
+    for (i=0; i < strlen(l->empr.jeu.nom); i++)
+        tmp[i] = tolower(l->empr.jeu.nom[i]);
+    tmp[i] = '\0';
+    
     if (l == NULL)
         return l;
-    if (strcmp(nom, l->empr.jeu.nom) == 0)
+    if (strcmp(nom, tmp) == 0)
     {   
         *t = true;
         return supEmprtete(l);
@@ -615,8 +625,8 @@ lEmprunt supEmpr(lEmprunt l, char *nom, bool *t)
 
 void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
 {
-    char *nom, *prenom, *game;
-    int whJ, whC;
+    char tmpGame[100];
+    int whJ, whC, i;
     bool t;
     lEmprunt tmp;
 
@@ -627,9 +637,13 @@ void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
         printf("Opération annulée");
         return;
     }
-
     t = false;
-    tCli[whC]->lEmpr = supEmpr(tCli[whC]->lEmpr, game, &t);
+
+    for (i=0; i < strlen(tJeu[whJ]->nom); i++)
+        tmpGame[i] = tolower(tJeu[whJ]->nom[i]);
+
+    tCli[whC]->lEmpr = supEmpr(tCli[whC]->lEmpr, tmpGame, &t);
+
     if (t == true)
     {   
         tJeu[whJ]->nbdisp++;
