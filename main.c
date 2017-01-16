@@ -17,12 +17,12 @@ int main (void)
     Afternoon *tAft;
     int nbc=0, nbj=0, nba=0, endPrompt=0;
     bool t;
+    
 
     tCli = loadClient(&nbc);
     tJeu = loadGameList (&nbj);
     loadEmprunt(tCli, nbc, tJeu, nbj);
     tAft = loadAfternoon(&nba, tCli, nbc);
-    tAft = checkTime(tCli, nbc, tJeu, nbj, tAft, &nba);
     //InterfGraphique();
     
     Menu(tCli, nbc, tJeu, nbj, tAft, nba);

@@ -36,7 +36,6 @@ int printMenu()
         printf("||||||||| %c11 : Quitter                         |||||||||\n", sel[10]);
         printf("\n");
         printf("Déplacer le curseur:\t");
-        printf("%d\n", subDate(d, d1));
 
         scanf("%d", &choix);
         
@@ -168,7 +167,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 tmp = getchar();
                 printf("Mauvaise saisie, veuille réessayer s'il vous plait.\n");
                 choix = -1;
-                sleep(1);
+                system("sleep(1)");
                 break; 
         }
 
@@ -361,7 +360,7 @@ Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO F
 
     Afternoon aft, *tAft;
 
-    bool t = false;
+    bool t = false, match = false;
 
     while (t == false)
     {
@@ -376,12 +375,15 @@ Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO F
      
     }
 
-    printf("Choose the day :\n");
+    printf("Choose the day :\n"); 
     scanf("%d", &(aft.date.jour));
+
     printf("choose the month :\n");
     scanf("%d", &(aft.date.mois));
+
     printf("Choose the year :\n");
     scanf("%d", &(aft.date.an));
+
 
     printf("Choose how many people can join this afternoon :\n");
     scanf("%d", &(aft.nbPtot));
@@ -393,12 +395,10 @@ Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO F
         printf("problem tAFt malloc\n");
         exit(1);
     }
-
     tAft[*nba] = aft;
     (*nba)++;
     return tAft;
 }
-
 
 
 void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
@@ -454,9 +454,8 @@ Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj)
     for (i=0; i < *nba; i++)
     {
         if (otAft[i].jeu.nom == tJeu[wh]->nom)
-            break;
+                break;
     }
-
     for (j = i; j < *nba-1; j++)
     {
         otAft[j] = otAft[j+1];
@@ -468,7 +467,6 @@ Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj)
         printf("malloc\n");
         exit(1);
     }
-
     *nba = *nba -1;
     return tAft;
 }
@@ -541,6 +539,7 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
 {
     lEmprunt tmp;
     int i, tmpA;
+    bool t = false;
     Afternoon *ntAft;
     Date d = getDate();
 
@@ -568,6 +567,7 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
     {   
         if (subDate(d, tAft[i].date) < 0) //if afternoon has passed
         {   
+            t = true;
             printf("deleting..\n");
             ntAft = delAfternoon(tAft, i, nba, tJeu, nbj);
             i--;
@@ -577,7 +577,9 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
     if (nba == 0)
         return tAft;
 
-    return ntAft;
+    if (t == true)
+        return ntAft;
+    return tAft;
 }
 
 
@@ -608,7 +610,7 @@ void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba
     for (i = 0; i < nbj; i++)
         free(tJeu[i]);
     
-    //free(tAft); //fix TODO
+    free(tAft);
     free(tJeu);
     free(tCli);
 }

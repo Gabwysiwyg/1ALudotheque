@@ -77,7 +77,7 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
 {
 
     Client cli;
-
+    int cmp;
     strcpy(cli.nom, nom);
     strcpy(cli.prenom, prenom);
 
@@ -86,12 +86,13 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     while (inf <= sup && *t == false)
     {
         m = (sup+inf)/2;
-        if (cmpNomPrenom(cli, *tCli[m]) == 0)
+        cmp = cmpNomPrenom(cli, *tCli[m]);
+        if (cmp == 0)
         {
             *t = true;
             return m;
         }
-        else if (cmpNomPrenom(cli, *tCli[m]) < 0)
+        else if (cmp < 0)
             sup = m-1;
         else
             inf = m+1;
@@ -236,18 +237,20 @@ void UpdateGlobale (Client **tCli, int nb)
     char nom[20], prenom[20], rep;
     int ind;
     bool t;
-    printf("Nom : \n");
-    scanf("%s%*c", nom);
-    printf("Prenom : \n");
-    scanf("%s%*c", prenom);
-
-    ind = findCli(tCli, nb, nom, prenom, &t);
+    ind = inputFindCli(tCli, nb);  
+    if (ind == -1)
+    {
+        printf("Opération annulée\n");
+        return;
+    }  
 
     printf("Voulez vous resouscrire à notre offre ? (o/n)\n");
-    scanf("%c%*c", &rep);
-    while (rep != 'o'|| rep != 'O'|| rep != 'n'|| rep != 'N'){
+    scanf("%c", &rep);
+    while (rep != 'o'&& rep != 'O' && rep != 'n' && rep != 'N')
+    {
         printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
-        scanf("%c%*c", &rep);
+        scanf("%*c%c", &rep);
+        printf("%c\n", rep);
     }
 
     if (rep == 'O'|| rep == 'o')
@@ -257,24 +260,25 @@ void UpdateGlobale (Client **tCli, int nb)
     }
     
     printf("Voulez vous modifier vos données personelles ? (o/n)\n");
-    scanf("%c%*c", &rep);
-    while (rep != 'o' || rep != 'O'|| rep != 'n'|| rep != 'N'){
-        printf("Mauvaise saisie, voulez vous resouscrire à notre offre ? (o/n)\n");
-        scanf("%c%*c", &rep);
+    scanf("%*c%c", &rep);
+    while (rep != 'o' && rep != 'O' && rep != 'n' && rep != 'N')
+    {
+        printf("Mauvaise saisie, réessayez (o/n)\n");
+        scanf("%*c%c", &rep);
     }
-
     if (rep == 'O' || rep == 'o')
         updateCli(tCli[ind]);
 }
 
 void updateCli(Client *cli)
 {
-    char ans;
+    char ans, tmp;
     
     printf("Update nom ? (o/n)\n");
     scanf("%*c%c", &ans);
     if (ans == 'o' || ans == 'O')
-    {
+    {   
+        scanf("%*c");
         printf("Nouveau nom: \n");
         fgets(cli->nom, 20, stdin);
         cli->nom[strlen(cli->nom)-1] = '\0'; //nom
@@ -284,15 +288,17 @@ void updateCli(Client *cli)
     scanf("%*c%c", &ans);
     if (ans == 'o' || ans == 'O')
     {
+        tmp = getchar();
         printf("Nouveau prenom: \n");
         fgets(cli->prenom, 20, stdin);
         cli->prenom[strlen(cli->prenom)-1] = '\0'; //nom
     }
 
     printf("Update adresse ? (o/n)\n");
-    scanf("%*c%c", &ans);
+    scanf("%*c%c" &ans);
     if (ans == 'o' || ans == 'O')
     {
+        tmp = getchar();
         printf("Nouvelle adresse: \n");
         fgets(cli->adresse, 50, stdin);
         cli->adresse[strlen(cli->adresse)-1] = '\0'; //nom
@@ -302,6 +308,7 @@ void updateCli(Client *cli)
     scanf("%*c%c", &ans);
     if (ans == 'o' || ans == 'O') //if we change postal code we also change city
     {
+        tmp = getchar();
         printf("Nouveau code postal: \n");
         scanf("%s", cli->codeP);
         printf("Nouvelle ville: \n");
@@ -312,8 +319,9 @@ void updateCli(Client *cli)
     scanf("%*c%c", &ans);
     if (ans == 'o' || ans == 'O')
     {
-       printf("Nouvelle ville: \n");
-       scanf("%s", cli->ville);
+        tmp = getchar();
+        printf("Nouvelle ville: \n");
+        scanf("%s", cli->ville);
     }
 }
 
@@ -395,25 +403,23 @@ int cmpNomPrenom(Client c1, Client c2)
             break;
         else if (sub1[i] == sub3[i])
                 cpt++;
+        if (sub2[i] == '\0' || sub4[i] == '\0')
+            break;
+        else if (sub2[i] == sub4[i])
+                cpt++;
     }
 
-    if (strcmp(sub1, sub3) > 0 && cpt >= 3){
+    if (strcmp(sub1, sub3) == 0 && strcmp(sub2, sub4) == 0)
+        return 0;
+
+    if (cpt >= 6)
+    {
         printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
         scanf("%c%*c", &ans);
         if (ans == 'o' || ans == 'O')
             return 0;
-        else
-            return 1;
     }
         
-    else if(strcmp(sub1, sub3) < 0 && cpt >= 3){
-        printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
-        scanf("%c%*c", &ans);   
-        if (ans == 'o' || ans == 'O')
-            return 0;
-        else
-            return -1;
-    }
 
     else if (strcmp(sub1, sub3) > 0)
         return 1;
@@ -421,35 +427,10 @@ int cmpNomPrenom(Client c1, Client c2)
     else if (strcmp(sub1, sub3) < 0)
         return -1;
 
-
-    for (i=0; i<20; i++){
-        if (sub2[i] == sub4[i])
-            cpt++;
-    }
-
-    if (strcmp(sub2, sub4) > 0 && cpt >= 2){
-        printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
-        scanf("%c%*c", &ans);
-        if (ans == 'o' || ans == 'O')
-            return 0;
-        else
-            return 1;
-    }
-
-    else if(strcmp(sub2, sub4) < 0 && cpt >= 3){
-        printf("Client introuvable, voulez-vous dire : %s %s ? (o/n)\n", sub3, sub4);
-        scanf("%c%*c", &ans);
-        if (ans == 'o' || ans == 'O')
-            return 0;
-        else
-            return -1;
-    }
-
+    else if (strcmp(sub2, sub4) < 0) //if family name are equal
+        return -1;
     else if (strcmp(sub2, sub4) > 0)
         return 1;
-
-    else if (strcmp(sub2, sub4) < 0)
-        return -1;
 
     else //if name & surname are equal
         return 0;
@@ -703,6 +684,7 @@ bool isLate(Client cli)
             return true;
         cli.lEmpr = cli.lEmpr->nxt;
     }
+    return false;
 }
 
 
@@ -741,7 +723,7 @@ int inputFindCli(Client **tCli, int nb)
             return wh;
 
         printf("Client non-trouvé, voulez-vous réessayer ? (o/n)\n");
-        scanf("%*c%c", &c);
+        scanf("%c", &c);
         if (c == 'n')
             return -1;
     }
