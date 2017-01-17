@@ -638,9 +638,10 @@ void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
 
     for (i=0; i < strlen(tJeu[whJ]->nom); i++)
         tmpGame[i] = tolower(tJeu[whJ]->nom[i]);
+    tmpGame[i] = '\0';
 
     tCli[whC]->lEmpr = supEmpr(tCli[whC]->lEmpr, tmpGame, &t);
-
+    tJeu[whJ]->nbdisp++;
     if (t == true)
     {   
         tJeu[whJ]->nbdisp++;

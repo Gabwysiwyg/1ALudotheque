@@ -11,16 +11,14 @@
 
 int printMenu()
 {   
-    int choix = 1;
+    char choix = '1';
     char sel[11] = "-          ";
     int selec = 0;
     Date d = getDate(), d1 = {15, 01, 2015};
-
-    while (choix != 0)
+    while (choix != '\r')
     {
         system("clear");
-        
-        printf("\n");
+
         printf("*********                |Menu|                *********\n");
         printf("\n");
         printf("||||||||| %c1 : Enregistrer un nouveau membre    |||||||||\n", sel[0]);
@@ -35,18 +33,22 @@ int printMenu()
         printf("||||||||| %c10 : Afficher liste des emprunts     |||||||||\n", sel[9]);
         printf("||||||||| %c11 : Quitter                         |||||||||\n", sel[10]);
         printf("\n");
-        printf("Déplacer le curseur:\t");
-
-        scanf("%d", &choix);
+        printf("Déplacer le curseur: ");
         
-        if (choix == 2)
+        system ("/bin/stty raw -echo");
+        choix = getchar();
+        system ("/bin/stty cooked echo");
+        
+        printf("\n");
+        
+        if (choix == '2')
         {   
             sel[selec] = ' ';
             sel[(selec+1) % 11] = '-';
             selec++;
             selec = selec % 11;
         }
-        else if (choix == 8)
+        else if (choix == '8')
         {
             sel[selec] = ' ';
             if (selec == 0)
@@ -79,7 +81,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
     	{
             case 1:
                 printf("\nVous avez choisi d'enregister un nouveau membre.\n");
-                tmp = getchar();
                 printf("\n");
                 tCli = newClient(tCli, &nbc);
                 printf("\n");
@@ -87,7 +88,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break;
             case 2:
              	printf("\nVous avez choisi de supprimer un membre.\n");
-                tmp = getchar();
                 printf("\n");
                 delClient(tCli, &nbc);
                 printf("\n");
@@ -95,7 +95,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break;
             case 3:
                 printf("\nVous avez choisi de modifier un membre.\n");
-                tmp = getchar();
                 printf("\n");
                 UpdateGlobale(tCli, nbc);
                 printf("\n");
@@ -103,7 +102,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break;
             case 4:
                 printf("\nVous avez choisi de faire un nouvel emprunt.\n");
-                tmp = getchar();
                 printf("\n");
                 newEmprunt(tJeu, nbj, tCli, nbc);
                 printf("\n");
@@ -111,7 +109,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break;   
             case 5:
                 printf("\nVous avez choisi de rendre un jeu.\n");
-                tmp = getchar();
                 printf("\n");
                 delEmpr(tCli, nbc, tJeu, nbj);
                 printf("\n");
@@ -119,7 +116,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break;   
             case 6:
                 printf("\nVous avez choisi de créer un après midi thématique.\n");
-                tmp = getchar();
                 printf("\n");
                 tAft=newAfternoon(tAft, &nba, tJeu, nbj);
                 printf("\n");
@@ -127,21 +123,18 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break;
             case 7:
                 printf("\nVous avez choisi d'inscrire un client à un après midi thématique.\n");
-                tmp = getchar();
                 printf("\n");
                 regForAfternoon(tAft, nba, tCli, nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
             case 8:
-                tmp = getchar();
                 printf("\n");
                 printGameList(tJeu, nbj);
                 printf("\n");
                 printf("Et voila le travail : \n");
                 break;
             case 9:
-                tmp = getchar();
                 printf("\n");
                 printAftReg(tAft, nba);
                 printf("\n");
@@ -149,7 +142,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break; 
             case 10:
                 printf("\nAffichage..\n");
-                tmp = getchar();
                 printf("\n");
                 printLateCli(tCli, nbc);
                 printf("\n");
@@ -162,7 +154,6 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 quit(tCli, nbc, tJeu, nbj, tAft, &nba);
                 return; 
             default:
-                tmp = getchar();
                 printf("Mauvaise saisie, veuille réessayer s'il vous plait.\n");
                 choix = -1;
                 system("sleep(1)");
@@ -386,7 +377,7 @@ Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO F
     printf("Choose how many people can join this afternoon :\n");
     scanf("%d", &(aft.nbPtot));
     aft.nbPdisp=aft.nbPtot;
-
+    aft.lCli = NULL;
     tAft =(Afternoon *)realloc(otAft, (*nba+1)*sizeof(Afternoon));
     if (tAft == NULL)
     {
@@ -407,7 +398,6 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
 
 
 
-
     whC = inputFindCli(tCli, nbc);
     if (whC == -1)
     {
@@ -416,7 +406,10 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
     }
     
     printf("Nom du jeu: \n");
-    fgets(jeu, 20, stdin); //retry
+    
+    fgets(jeu, 100, stdin); //retry
+    printf("yolo\n");
+
     jeu[strlen(jeu)-1] = '\0';
 
     for (i=0; i < nba; i++)
@@ -437,7 +430,6 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
         printf("Booking is full\n");
         return;
     }
-
     tAft[i].lCli = insCliAft(*tCli[whC], tAft[i]);
     tAft[i].nbPdisp -= 1;
 }
