@@ -392,7 +392,7 @@ Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO F
 
 void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
 {
-    char *jeu, *nom, *prenom;
+    char jeu[100];
     bool t = false;
     int whC, i;  
 
@@ -404,11 +404,13 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
         printf("Opération annulée");
         return;
     }
-    
+    if (tCli[whC]->paye == 0)
+    {
+        printf("votre abonnement a expiré, veuillez le renouveler\n");
+    }
     printf("Nom du jeu: \n");
     
     fgets(jeu, 100, stdin); //retry
-    printf("yolo\n");
 
     jeu[strlen(jeu)-1] = '\0';
 
@@ -580,8 +582,9 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
             }
         }
 
-        if (subDate(d, tCli[i]->dIns) < 365) //if client outdated
+        if (subDate(d, tCli[i]->dIns) < -365) //if client outdated
             tCli[i]->paye = false; //he needs to pay again
+        
     }
 
     for (i = 0; i < *nba; i++)
