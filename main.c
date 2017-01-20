@@ -25,10 +25,6 @@ int main (void)
     loadEmprunt(tCli, nbc, tJeu, nbj);
     tAft = loadAfternoon(&nba, tCli, nbc);
     //InterfGraphique();
-    
-    for(i=0; i < nbc; i++)
-        if (isLate(*tCli[i]))
-            tCli[i]->retard = 1;
     Menu(tCli, nbc, tJeu, nbj, tAft, nba);
 
     return 0;

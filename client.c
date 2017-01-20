@@ -9,7 +9,7 @@
 
 
 
-Client ** loadClient(int *nbmax)
+Client ** loadClient(int *nbmax) //LIT LE FICHIER ET MET LES CLIENTS DANS UN TABLEAU
 {
     int i;
     Client **tCli;
@@ -48,8 +48,9 @@ Client ** loadClient(int *nbmax)
     return tCli; //return nb of client
 }
 
-Client readClient(FILE *file)
+Client readClient(FILE *file) //LIT UN CLIENT DEPUIS LE FLOT
 {
+    Date d = getDate();
 	Client cli;
 
 	fgets(cli.nom, 20, file);
@@ -66,14 +67,18 @@ Client readClient(FILE *file)
 
 	fscanf(file, "%s%*c", cli.codeP); //code postal
     fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
+    
+    if (subDate(d, cli.dIns) < -365)//on vérifie si l'abonnement est encore valide
+	   cli.paye = true;
+    else
+        cli.paye = false
 
-	cli.paye = true;
     cli.retard = false;
     cli.lEmpr = NULL;
 	return cli;
 }
 
-int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMIQUE VOIR COURS 
+int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //RECHERCHE DICHOTOMIQUE
 {
 
     Client cli;
@@ -86,7 +91,7 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     while (inf <= sup && *t == false)
     {
         m = (sup+inf)/2;
-        cmp = cmpNomPrenom(cli, *tCli[m]);
+        cmp = cmpNomPrenom(cli, *tCli[m]); //on compare noms et prénom des deux prénoms dans l'alphabet
         if (cmp == 0)
         {
             *t = true;
@@ -102,7 +107,7 @@ int findCli(Client **tCli, int nb, char *nom, char *prenom, bool *t) //DICHOTOMI
     return inf;
 }
 
-Client ** newClient(Client **tCli, int *nb) 
+Client ** newClient(Client **tCli, int *nb) //CRÉATION D'UN CLIENT
 {
     int wh;
     bool t, match = false;
@@ -110,7 +115,7 @@ Client ** newClient(Client **tCli, int *nb)
     char rep;
     Client **tmp;
 
-    //email regex: ^[a-zA-Z]*@.*\\..*$
+    //regex email: ^[a-zA-Z]*@.*\\..*$
 
     while (match == false)
     {
@@ -118,7 +123,7 @@ Client ** newClient(Client **tCli, int *nb)
         fgets(cli.nom, 20, stdin);
         cli.nom[strlen(cli.nom)-1] = '\0';
 
-        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.nom);
+        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.nom); //on vérifie si l'input correspond a cette expression régulière
     }
     match = false;
     while (match == false)
@@ -127,12 +132,12 @@ Client ** newClient(Client **tCli, int *nb)
         fgets(cli.prenom, 20, stdin);
         cli.prenom[strlen(cli.prenom)-1] = '\0';
 
-        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.prenom);
+        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.prenom); //on vérifie si l'input correspond a cette expression régulière
     }
 
-    wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t);
+    wh = findCli(tCli, *nb, cli.nom, cli.prenom, &t); //on cherche si le client existe déjà
 
-    if (t == true)
+    if (t == true) //si il existe, on propose de modifier ses infos, et on quitte
     {
         printf("User found, update data ? (o/n)\n");
         scanf("%c%*c", &rep);
@@ -154,7 +159,7 @@ Client ** newClient(Client **tCli, int *nb)
         fgets(cli.ville, 20, stdin);
         cli.ville[strlen(cli.ville)-1] = '\0';
 
-        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.ville);
+        match = regexMatch("^([a-zA-Z]*( |\\-)?)*$", cli.ville); //on vérifie si l'input correspond a cette expression régulière
     }
 
     printf("Adresse: \n");
@@ -167,7 +172,7 @@ Client ** newClient(Client **tCli, int *nb)
         printf("Code postal ?\n");
         scanf("%s", cli.codeP);
 
-        match = regexMatch("^[0-9]{5}$", (char *)cli.codeP);
+        match = regexMatch("^[0-9]{5}$", (char *)cli.codeP); //on vérifie si l'input correspond a cette expression régulière
 
         if (strcmp(cli.codeP, "98000") > 0)
             printf("Mauvaise saisie, réessayez\n");
@@ -199,31 +204,31 @@ Client ** newClient(Client **tCli, int *nb)
     return tCli;
 }
 
-bool regexMatch(char *patt, char *str)
+bool regexMatch(char *patt, char *str) //FONCTION POUR TESTER DES EXPRESSIONS RÉGULIÈRES
 {
     regex_t pattern;
     int status;
 
-    if (regcomp(&pattern, patt, REG_EXTENDED) != 0)
+    if (regcomp(&pattern, patt, REG_EXTENDED) != 0) //on compile l'expression
     {
         printf("couldn't compile regex %s\n", patt);
         exit(1);
     }
 
-    status = regexec(&pattern, str, (size_t) 0, NULL, 0);
+    status = regexec(&pattern, str, (size_t) 0, NULL, 0); //on teste la chaine de charactères
     regfree(&pattern);
 
-    if (!status)
-    {
+    if (!status) //on regarde le résultat
         return true;
-    }
-        printf("Mauvaise saisie, réessayez.\n");
+
+    //si la vérification a échouée
+    printf("Mauvaise saisie, réessayez.\n");
     return false;
 
 }
 
 
-void rightShift(Client **tCli, int nbmax, int n)
+void rightShift(Client **tCli, int nbmax, int n) //DÉCALAGE A DROITE D'UN TABLEAU
 {
     int i;
     for (i=nbmax; i > n; i--)
@@ -232,7 +237,7 @@ void rightShift(Client **tCli, int nbmax, int n)
     }
 }
 
-void UpdateGlobale (Client **tCli, int nb)
+void UpdateGlobale (Client **tCli, int nb) //MODIFICATION DES INFORMATIONS ET DE L'ABONNEMENTD'UN CLIENT
 {
     char nom[20], prenom[20], rep;
     int ind;
@@ -270,7 +275,7 @@ void UpdateGlobale (Client **tCli, int nb)
         updateCli(tCli[ind]);
 }
 
-void updateCli(Client *cli)
+void updateCli(Client *cli) //MODIFICATION DES INFORMATIONS PERSONNELLES D'UN CLIENT
 {
     char ans, tmp;
     
@@ -325,14 +330,14 @@ void updateCli(Client *cli)
     }
 }
 
-void newSouscription(Client **tCli, int nb, int ind)
+void newSouscription(Client **tCli, int nb, int ind) //RAJOUT D'UN AN D'ABONNEMENT A UN CLIENT
 {
     tCli[ind]->dIns.an+=1;
     if (tCli[ind]->paye==0)
         tCli[ind]->paye=1;
 }
 
-void delClient(Client **tCli, int *nb)
+Client **delClient(Client **tCli, int *nb) //SUPPRESSION D'UN CLIENT (BACKEND)
 {
     bool t;
     int wh;
@@ -346,9 +351,11 @@ void delClient(Client **tCli, int *nb)
         return;
     }
 
-    leftShift(tCli, *nb, wh);
-    (*nb)--;
-    tmp = (Client **)realloc(tCli, (*nb)*sizeof(Client *));
+    leftShift(tCli, *nb, wh); //on décale le tableau a gauche
+
+    (*nb)--; //on actualise le nombre d'éléments du tableau
+
+    tmp = (Client **)realloc(tCli, (*nb)*sizeof(Client *)); //on réalloue le tableau avec une place de moins
     if (tmp == NULL)
     {
         printf("malloc tmpDel\n");
@@ -356,16 +363,17 @@ void delClient(Client **tCli, int *nb)
     }
 
     tCli = tmp;
+    return tCli;
 }
 
-void leftShift(Client **tCli, int nb, int n) 
+void leftShift(Client **tCli, int nb, int n) //DÉCALAGE A GAUCHE D'UN TABLEAU
 {
     int i;
     for (i = n; i < nb; i++)
         tCli[i] = tCli[i+1];
 }
 
-void saveClient(Client **tClient, int nb)
+void saveClient(Client **tClient, int nb) //ECRITURE DU TABLEAU DANS LE FICHIER
 {
     FILE *fe;
     int i;
@@ -382,7 +390,7 @@ void saveClient(Client **tClient, int nb)
     fclose(fe);
 }
 
-int cmpNomPrenom(Client c1, Client c2)
+int cmpNomPrenom(Client c1, Client c2) //STRCMP AVEC DEUX CHAINE DE CHARACTERES
 {
     int i, j, cpt=0, cpt2=0;
     char sub1[20], sub2[20], sub3[20], sub4[20], ans;
@@ -437,7 +445,7 @@ int cmpNomPrenom(Client c1, Client c2)
 
 }
 
-void printLateCli(Client **tCli, int nb)
+void printLateCli(Client **tCli, int nb) //AFFICHAGE DES CLIENT EN RETARD
 {
     int i;
 
@@ -467,7 +475,7 @@ void printLateCli(Client **tCli, int nb)
 
 
 
-void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not found maybe
+void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //ON CHARGE LES EMPRUNTS
 {
     FILE *fe;
     Emprunt empr;
@@ -476,29 +484,32 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
     char game[100];
     int whJ, whC, nbemp, i;
     bool t, ret;
-    fe=fopen("emprunts.don", "r");
+    fe=fopen("emprunts.don", "r"); //on ouvre le fichier
     if (fe ==NULL)
     {
         printf("Issue during file oppening\n");
         exit(1);
     }
 
-
+    //LECTURE DES INFOS
     fgets(nom, 20, fe);
     nom[strlen(nom)-1] = '\0';
+
     fgets(prenom, 20, fe);
     prenom[strlen(prenom)-1] = '\0';
+
     fscanf(fe, "%d/%d/%d\n", &(d.jour), &(d.mois), &(d.an));
     
     fgets(game, 100, fe);
     game[strlen(game)-1] = '\0';
     fscanf(fe, "%d\n", &ret);
-    
+
+    //FIN DE LA LECTURE    
 
     while (!feof(fe))
     {   
 
-        whC = findCli(tCli, nb, nom, prenom, &t);
+        whC = findCli(tCli, nb, nom, prenom, &t); //vérification de l'existence du client
 
         if (t == false)
         {
@@ -506,7 +517,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
             return;
         }
 
-        whJ = findJeu(tJeu, nbj, game, &t);
+        whJ = findJeu(tJeu, nbj, game, &t); //vérification de l'existence du jeu
 
         if (t == false)
         {
@@ -514,37 +525,45 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //TODO fix game not
             return;
         }
 
+        //Création de l'emprunt
         strcpy(empr.jeu.nom, game);
         empr.jeu.nbdisp = tJeu[whJ]->nbdisp;
         empr.jeu.nbtot= tJeu[whJ]->nbtot;
         empr.date = d;
         empr.retard = ret;
-        tCli[whC]->retard = tCli[whC]->retard || ret;
-        tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr);
-        tJeu[whJ]->nbdisp--;
 
+        tCli[whC]->retard = tCli[whC]->retard || ret; //on actualise la variable globale de retard du client
+        tCli[whC]->lEmpr = insEmpr(*tCli[whC], empr); //on insert l'emprunt dans le client
+        tJeu[whJ]->nbdisp--; //on diminue le nb dispo de ce jeu
+
+        
+        //LECTURE DES INFOS
         fgets(nom, 20, fe);
         nom[strlen(nom)-1] = '\0';
+
         fgets(prenom, 20, fe);
         prenom[strlen(prenom)-1] = '\0';
+
         fscanf(fe, "%d/%d/%d\n", &(d.jour), &(d.mois), &(d.an));
         
         fgets(game, 100, fe);
         game[strlen(game)-1] = '\0';
 
         fscanf(fe, "%d\n", &ret);
+        //FIN DE LA LECTURE    
+
 
     }
 }
 
-void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc) 
+void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc) //CRÉATION D'UN EMPRUNT
 {
     Emprunt empr;
     bool t;
     int whC, whJ;
 
-    whC = inputFindCli(tCli, nbc);
-    whJ = inputFindJeu(tJeu, nbj);
+    whC = inputFindCli(tCli, nbc); //input du client
+    whJ = inputFindJeu(tJeu, nbj); //input du jeu
     if (whC == -1 || whJ == -1)
     {
         printf("Opération annulée");
@@ -578,31 +597,31 @@ void newEmprunt(Jeu **tJeu, int nbj, Client **tCli, int nbc)
     printf("%s %s: %d emprunts\n", tCli[whC]->nom, tCli[whC]->prenom, nbEmpr(*tCli[whC]));
 }
 
-lEmprunt insEmpr(Client cli, Emprunt emprunt)
+lEmprunt insEmpr(Client cli, Emprunt emprunt) //INSERTION EN TETE D'UN EMPRUNT DANS UNE LISTE
 {
     MaillonE *m;
-    m = (MaillonE *)malloc(sizeof(MaillonE));
+    m = (MaillonE *)malloc(sizeof(MaillonE)); //création du futur 1er maillon
     if (m == NULL)
     {
         printf("error malloc maillon emprunt\n");
         exit(1);
     }
 
-    m->empr = emprunt;
-    m->nxt = cli.lEmpr;
+    m->empr = emprunt; //on insere l'emprunt dans le maillon
+    m->nxt = cli.lEmpr; //on met le maillon en tete
     return m;
 }
 
-lEmprunt supEmprtete(lEmprunt l)
+lEmprunt supEmprtete(lEmprunt l) //SUPPRESSION DE L'EMPRUNT EN TETE
 {
     MaillonE *tmp;
     tmp = l->nxt;
-    free(l);
-    return tmp;
+    free(l); //on free le 1er maillon a
+    return tmp; //on return le suivant
 }
 
 
-lEmprunt supEmpr(lEmprunt l, char *nom, bool *t)
+lEmprunt supEmpr(lEmprunt l, char *nom, bool *t) //SUPPRESSION D'UN EMPRUNT EN RÉCURSIF (BACKEND)
 { 
     char tmp[100];
     int i;
@@ -620,7 +639,7 @@ lEmprunt supEmpr(lEmprunt l, char *nom, bool *t)
     return supEmpr(l->nxt, nom, t);
 }
 
-void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
+void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj) //SUPPRESSION D'UN EMPRUNT (FRONTEND)
 {
     char tmpGame[100];
     int whJ, whC, i;
@@ -652,7 +671,7 @@ void delEmpr(Client **tCli, int nbc, Jeu **tJeu, int nbj)
     printf("You didn't rent this game\n");
 }
 
-void saveEmprunt(Client **tCli, int nb)
+void saveEmprunt(Client **tCli, int nb) //ECRITURE DU FICHIER D'EMPRUNT
 {
     int i;
     FILE *fe;
@@ -682,7 +701,7 @@ void saveEmprunt(Client **tCli, int nb)
     fclose(fe);
 }
 
-int nbEmpr(Client cli)
+int nbEmpr(Client cli) //GET NOMBRE D'EMPRUNT D'UN CLIENT
 {
     int nb = 0;
     while (cli.lEmpr != NULL)
@@ -693,7 +712,7 @@ int nbEmpr(Client cli)
     return nb;
 }
 
-bool isLate(Client cli)
+bool isLate(Client cli) //RENVOIE 1 SI UN DES EMPRUNTS DU CLIENT A DU RETARD
 {
     while (cli.lEmpr != NULL)
     {

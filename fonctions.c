@@ -35,12 +35,13 @@ int printMenu()
         printf("\n");
         printf("Déplacer le curseur: ");
         
-        system ("/bin/stty raw -echo");
+        system ("/bin/stty raw -echo"); //NO VISIBLE INPUT, NO GETCHAR ENTER KEY
         choix = getchar();
-        system ("/bin/stty cooked echo");
+        system ("/bin/stty cooked echo"); //VISIBLE INPUT, ENTER TO VALIDATE
         
         printf("\n");
         
+        //gestion de la séléction
         if (choix == '2')
         {   
             sel[selec] = ' ';
@@ -89,7 +90,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
             case 2:
              	printf("\nVous avez choisi de supprimer un membre.\n");
                 printf("\n");
-                delClient(tCli, &nbc);
+                tCli = delClient(tCli, &nbc);
                 printf("\n");
                 printf("C'est fait, merci!\n");
                 break;
@@ -178,7 +179,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
 
 
 
-Jeu readJeu(FILE *fe)
+Jeu readJeu(FILE *fe) //LIT UN JEU DANS LE FLOT
 {
     Jeu game;
     fgets(game.nom, 100, fe);
@@ -187,7 +188,7 @@ Jeu readJeu(FILE *fe)
     return game;
 }
 
-Jeu **loadGameList (int *nb)
+Jeu **loadGameList (int *nb) //MET LES JEUX DU FICHIER DANS UN TABLEAU
 {
     FILE *fe;
     int i=0;
@@ -222,7 +223,7 @@ Jeu **loadGameList (int *nb)
     return tJeu;
 }
 
-int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
+int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS
 {
     char lNom[100], lGame[100];
     int inf = 0, sup = nb-1, m, i;
@@ -258,7 +259,7 @@ int findJeu(Jeu **tJeu, int nb, char *nom, bool *t) //DICHOTOMIQUE VOIR COURS //
     return inf;
 }
 
-void saveGameList(Jeu **tJeu, int nb)
+void saveGameList(Jeu **tJeu, int nb) //ÉCRITURE DE LA LISTE DE JEUX DANS LE FICHIER
 {
     FILE *fe;
     int i;
