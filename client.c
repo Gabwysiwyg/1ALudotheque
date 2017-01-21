@@ -71,7 +71,7 @@ Client readClient(FILE *file) //LIT UN CLIENT DEPUIS LE FLOT
     if (subDate(d, cli.dIns) < -365)//on vérifie si l'abonnement est encore valide
 	   cli.paye = true;
     else
-        cli.paye = false
+        cli.paye = false;
 
     cli.retard = false;
     cli.lEmpr = NULL;
@@ -502,6 +502,7 @@ void loadEmprunt(Client **tCli, int nb, Jeu **tJeu, int nbj) //ON CHARGE LES EMP
     
     fgets(game, 100, fe);
     game[strlen(game)-1] = '\0';
+    
     fscanf(fe, "%d\n", &ret);
 
     //FIN DE LA LECTURE    
