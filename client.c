@@ -348,7 +348,7 @@ Client **delClient(Client **tCli, int *nb) //SUPPRESSION D'UN CLIENT (BACKEND)
     if (wh == -1)
     {
         printf("Opération annulée");
-        return;
+        return tCli;
     }
 
     leftShift(tCli, *nb, wh); //on décale le tableau a gauche
@@ -406,7 +406,8 @@ int cmpNomPrenom(Client c1, Client c2) //STRCMP AVEC DEUX CHAINE DE CHARACTERES
         sub4[j]=toupper(sub4[j]);
     }
 
-    for (i=0; i<20; i++){
+    for (i=0; i<20; i++)
+    {
         if (sub1[i] == '\0' || sub3[i] == '\0')
             break;
         else if (sub1[i] == sub3[i])
@@ -440,38 +441,21 @@ int cmpNomPrenom(Client c1, Client c2) //STRCMP AVEC DEUX CHAINE DE CHARACTERES
     else if (strcmp(sub2, sub4) > 0)
         return 1;
 
-    else //if name & surname are equal
-        return 0;
-
+    return 0;
 }
+
 
 void printLateCli(Client **tCli, int nb) //AFFICHAGE DES CLIENT EN RETARD
 {
     int i;
 
     printf("Les emprenteurs ayant actuellement un retard sont: \n");
-    for (i = 0; i < nb; i++)
+    for (i = 0; i < nb; i++){
         if (tCli[i]->retard == 1)
             printf("-%s %s\n", tCli[i]->nom, tCli[i]->prenom);
+    }
 
 }
-
-
-
-
-
-
-/*void mailToClient(Client **tCli, int nb) //TODO add email au client
-{  
-    int i;
-
-    for (i=0; i<nb; i++){
-        if (tCli[i]->paye == false)
-            system("mailx -s \'Suscribe\' \'FROM: Gabin.salabert@laposte.net\'" + tCli[i]->email  + " < echo \'Votre inscription a expiré, vous devez payer à nouveau. Cordialement.\'");
-    } 
-}*/
-
-
 
 
 
@@ -791,6 +775,12 @@ int inputFindJeu(Jeu **tJeu, int nb)
             return -1;
     }
     return wh;
+}
+
+
+int subDate(Date d1, Date d2)
+{
+    return -(365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour);
 }
 
 

@@ -607,17 +607,6 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
 }
 
 
-
-
-
-int subDate(Date d1, Date d2) //return d1 to d2 (in days)
-{
-    return -(365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour);
-}
-
-
-
-
 void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba)
 {   
     int i;

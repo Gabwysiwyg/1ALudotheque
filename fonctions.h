@@ -23,30 +23,29 @@ typedef struct {
 } Afternoon;
 
 
-int printMenu ();
-void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba);
+int printMenu (); //Done
+void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba); //Done
 Jeu readJeu(FILE *fe); //Done
 Jeu **loadGameList (int *nb); // Done
-void saveGameList(Jeu **tJeu, int nb);
-void printGameList(Jeu **tJeu, int nb);
-int findJeu(Jeu **tJeu, int nb, char *nom, bool *t); //DICHOTOMIQUE VOIR COURS //TODO PROBLEME DANS LA FONCTION!
+void saveGameList(Jeu **tJeu, int nb); //Done
+void printGameList(Jeu **tJeu, int nb); //Done
+int findJeu(Jeu **tJeu, int nb, char *nom, bool *t); //Done
 void saveAft(Afternoon tAft[], int nb); //Done
 
 Afternoon *loadAfternoon(int *nb, Client **tCli, int nbc); //Done
 Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb); //Done
-Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj);
-void printAftReg(Afternoon *tAft, int nba);
+Afternoon *delAfternoon(Afternoon *otAft, int wh, int *nba, Jeu **tJeu, int nbj); //Done
+void printAftReg(Afternoon *tAft, int nba); //Done
 
 
 void regForAfternoon(Afternoon *tAft, int nba, Client **tCli, int nbc); //Done
 liCli insCliAft(Client cli, Afternoon aft); //Done
 
-int subDate(Date d1, Date d2); // Done
-Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba);
+Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba); //Done
 
 
-int InterfGraphique(void);
+int InterfGraphique(void); //Done
 
-void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba);
+void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba); //Done
 
-void mail(Client cli);
+void mail(Client cli); //Done
