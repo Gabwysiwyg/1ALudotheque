@@ -24,7 +24,9 @@ int main (void)
     tJeu = loadGameList (&nbj);
     loadEmprunt(tCli, nbc, tJeu, nbj);
     tAft = loadAfternoon(&nba, tCli, nbc);
+
     //InterfGraphique();
+    
     Menu(tCli, nbc, tJeu, nbj, tAft, nba);
 
     return 0;

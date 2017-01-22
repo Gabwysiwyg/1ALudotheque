@@ -69,9 +69,9 @@ Client readClient(FILE *file) //LIT UN CLIENT DEPUIS LE FLOT
     fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
     
     if (subDate(d, cli.dIns) < -365)//on vérifie si l'abonnement est encore valide
-	   cli.paye = true;
+	   cli.paye = 1;
     else
-        cli.paye = false;
+        cli.paye = 0;
 
     cli.retard = false;
     cli.lEmpr = NULL;
@@ -332,7 +332,7 @@ void updateCli(Client *cli) //MODIFICATION DES INFORMATIONS PERSONNELLES D'UN CL
 
 void newSouscription(Client **tCli, int nb, int ind) //RAJOUT D'UN AN D'ABONNEMENT A UN CLIENT
 {
-    tCli[ind]->dIns.an+=1;
+    tCli[ind]->dIns.an+=2;
     if (tCli[ind]->paye==0)
         tCli[ind]->paye=1;
 }
@@ -711,17 +711,6 @@ bool isLate(Client cli) //RENVOIE 1 SI UN DES EMPRUNTS DU CLIENT A DU RETARD
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 int inputFindCli(Client **tCli, int nb)
 {
     char nom[20], prenom[20];
@@ -780,7 +769,7 @@ int inputFindJeu(Jeu **tJeu, int nb)
 
 int subDate(Date d1, Date d2)
 {
-    return -(365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) + d1.jour - d2.jour);
+    return -(365*(d1.an - d2.an) + 30*(d1.mois - d2.mois) +  d1.jour - d2.jour);
 }
 
 

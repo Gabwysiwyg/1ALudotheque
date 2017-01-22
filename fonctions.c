@@ -85,6 +85,7 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\n");
                 tCli = newClient(tCli, &nbc);
                 printf("\n");
+                system("sleep(3)");
                 printf("C'est fait, merci!\n");
                 break;
             case 2:
@@ -133,20 +134,20 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 printf("\n");
                 printGameList(tJeu, nbj);
                 printf("\n");
-                printf("Et voila le travail : \n");
+                printf("Et voila le travail. \n");
                 break;
             case 9:
                 printf("\n");
                 printAftReg(tAft, nba);
                 printf("\n");
-                printf("Et voila le travail : \n");
+                printf("Et voila le travail. \n");
                 break; 
             case 10:
                 printf("\nAffichage..\n");
                 printf("\n");
                 printLateCli(tCli, nbc);
                 printf("\n");
-                printf("Et voila le travail : \n");
+                printf("Et voila le travail. \n");
                 break;
             case 11:
                 printf("\nVous avez choisi de quitter.\n");
@@ -161,13 +162,14 @@ void Menu(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int nba)
                 break; 
         }
 
-        if(choix !=-1)
+        if(choix != -1)
         {
-            printf("\nDo you want to realize another task ? (y/n)\n");
+            printf("\nVoulez vous réaliser une autre action ? (o/n)\n");
+            printf("\n");
             scanf("%c", &tmp);
             if (tmp == 'n' || tmp =='N')
             {
-                printf("Okay, quitting\n");
+                printf("Très bien, au revoir\n");
                 quit(tCli, nbc, tJeu, nbj, tAft, &nba);
 
                 return;
@@ -584,7 +586,7 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
         }
 
         if (subDate(d, tCli[i]->dIns) < -365) //if client outdated
-            tCli[i]->paye = false; //he needs to pay again
+            tCli[i]->paye = 0; //he needs to pay again
         
     }
 
