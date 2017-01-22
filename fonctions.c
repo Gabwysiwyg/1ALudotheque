@@ -356,7 +356,7 @@ Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO F
 
     while (t == false)
     {
-        printf("Enter the game's name: \n");
+        printf("Entrez le nom du jeu: \n");
         fgets(aft.jeu.nom, 40, stdin);
         aft.jeu.nom[strlen(aft.jeu.nom)-1]='\0';
     
@@ -367,17 +367,17 @@ Afternoon *newAfternoon(Afternoon *otAft, int *nba, Jeu **tJeu, int nb) //TODO F
      
     }
 
-    printf("Choose the day :\n"); 
+    printf("Veuillez choisir le jour :\n"); 
     scanf("%d", &(aft.date.jour));
 
-    printf("choose the month :\n");
+    printf("Veuillez choisir le mois :\n");
     scanf("%d", &(aft.date.mois));
 
-    printf("Choose the year :\n");
+    printf("Veuillez choisir l'année :\n");
     scanf("%d", &(aft.date.an));
 
 
-    printf("Choose how many people can join this afternoon :\n");
+    printf("Combien de personnes peuvent y particper ?\n");
     scanf("%d", &(aft.nbPtot));
     aft.nbPdisp=aft.nbPtot;
     aft.lCli = NULL;
@@ -432,7 +432,7 @@ void regForAfternoon(Afternoon tAft[], int nba, Client **tCli, int nbc)
 
     if (tAft[i].nbPdisp == 0)
     {
-        printf("Booking is full\n");
+        printf("Impossible, complet\n");
         return;
     }
     tAft[i].lCli = insCliAft(*tCli[whC], tAft[i]);

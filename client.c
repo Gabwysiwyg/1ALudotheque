@@ -332,7 +332,7 @@ void updateCli(Client *cli) //MODIFICATION DES INFORMATIONS PERSONNELLES D'UN CL
 
 void newSouscription(Client **tCli, int nb, int ind) //RAJOUT D'UN AN D'ABONNEMENT A UN CLIENT
 {
-    tCli[ind]->dIns.an+=2;
+    tCli[ind]->dIns.an+=1;
     if (tCli[ind]->paye==0)
         tCli[ind]->paye=1;
 }
