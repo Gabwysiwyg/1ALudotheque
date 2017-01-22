@@ -68,10 +68,10 @@ Client readClient(FILE *file) //LIT UN CLIENT DEPUIS LE FLOT
 	fscanf(file, "%s%*c", cli.codeP); //code postal
     fscanf(file, "%d/%d/%d%*c", &(cli.dIns.jour), &(cli.dIns.mois), &(cli.dIns.an));
     
-    if (subDate(d, cli.dIns) < -365)//on vérifie si l'abonnement est encore valide
-	   cli.paye = 1;
+    if (subDate(cli.dIns, d) > 365)//on vérifie si l'abonnement est encore valide
+	   cli.paye = 0;
     else
-        cli.paye = 0;
+        cli.paye = 1;
 
     cli.retard = false;
     cli.lEmpr = NULL;
