@@ -30,6 +30,7 @@ typedef struct maillonE {
 typedef struct {
 	char nom[20];
 	char prenom[20];
+	char email[30];
 	char adresse[50];
 	char ville[20];
 	char codeP[6];

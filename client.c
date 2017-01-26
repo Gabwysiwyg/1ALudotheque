@@ -59,6 +59,9 @@ Client readClient(FILE *file) //LIT UN CLIENT DEPUIS LE FLOT
 	fgets(cli.prenom, 20, file);
     cli.prenom[strlen(cli.prenom)-1] = '\0'; //prenom
 
+    fgets(cli.email, 50, file);
+    cli.email[strlen(cli.email)-1] = '\0'; //adresse
+
 	fgets(cli.adresse, 50, file);
     cli.adresse[strlen(cli.adresse)-1] = '\0'; //adresse
 
@@ -150,6 +153,16 @@ Client ** newClient(Client **tCli, int *nb) //CRÉATION D'UN CLIENT
             updateCli(tCli[wh]);
 
         return tCli;
+    }
+
+    match = false;
+    while (match == false)
+    {
+        printf("Email: \n");
+        fgets(cli.email, 20, stdin);
+        cli.email[strlen(cli.email)-1] = '\0';
+
+        match = regexMatch("^[a-zA-Z]*@.*\\..*$", cli.email); //on vérifie si l'input correspond a cette expression régulière
     }
 
     match = false;
@@ -385,7 +398,7 @@ void saveClient(Client **tClient, int nb) //ECRITURE DU TABLEAU DANS LE FICHIER
     fprintf(fe, "%d\n", nb);                         
     for(i=0; i < nb; i++)
     {
-        fprintf(fe,"%s\n%s\n%s\n%s\n%s\n%d/%d/%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP, tClient[i]->dIns.jour, tClient[i]->dIns.mois, tClient[i]->dIns.an);
+        fprintf(fe,"%s\n%s\n%s\n%s\n%s\n%s\n%d/%d/%d\n", tClient[i]->nom, tClient[i]->prenom, tClient[i]->email, tClient[i]->adresse, tClient[i]->ville, tClient[i]->codeP, tClient[i]->dIns.jour, tClient[i]->dIns.mois, tClient[i]->dIns.an);
     }
     fclose(fe);
 }

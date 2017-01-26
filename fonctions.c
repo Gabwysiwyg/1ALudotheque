@@ -586,8 +586,10 @@ Afternoon *checkTime(Client **tCli, int nb, Jeu **tJeu, int nbj, Afternoon *tAft
         }
 
         if (subDate(d, tCli[i]->dIns) < -365) //if client outdated
+        {
+            mail(*tCli[i]);
             tCli[i]->paye = 0; //he needs to pay again
-        
+        }
     }
 
     for (i = 0; i < *nba; i++)
@@ -633,7 +635,10 @@ void quit(Client **tCli, int nbc, Jeu **tJeu, int nbj, Afternoon *tAft, int *nba
 
 void mail(Client cli)
 {
-    //system("echo \"Votre abonnement a expiré\" | mail -s \"abonnement ludothèque\" + cli.email)
+    char cmd[150] = "echo \"Votre abonnement a expiré\" | mail -s \"abonnement ludothèque\" ";
+    strcat(cmd, cli.email);
+    strcat(cmd, " 2> /dev/null");
+    system(cmd);
     return;
 }
 
